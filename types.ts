@@ -24,9 +24,19 @@ export interface ModuleProgress {
   highScore: number; // Percentage 0-100
 }
 
+export type UserRole = 
+  | 'QA Admin' 
+  | 'Doctor' 
+  | 'Nurse' 
+  | 'Specialized Nurse' 
+  | 'Non-clinical' 
+  | 'Medical Intern' 
+  | 'Others';
+
 export interface UserState {
   progress: Record<string, ModuleProgress>;
   activeModuleId: string | null;
+  userRole?: UserRole;
 }
 
 export enum AppView {
