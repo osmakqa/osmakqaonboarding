@@ -1,4 +1,5 @@
 
+
 import { Module } from './types';
 
 export const PASSING_SCORE = 90;
@@ -134,7 +135,7 @@ export const MODULES: Module[] = [
     section: 'B. Infection Prevention and Control',
     title: 'Hand Hygiene Practices',
     description: 'Guidelines and protocols for minimizing the risk of spreading infections within the hospital environment. Includes hand hygiene, PPE usage, and isolation precautions.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1628122633099-28c4cc813959?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1616327883713-33318d183f34?auto=format&fit=crop&w=800&q=80',
     duration: '5 min',
     topics: ['Hand Hygiene', 'PPE', 'Isolation Protocols', 'Waste Disposal'],
     // Google Drive Link
@@ -502,7 +503,7 @@ export const MODULES: Module[] = [
     section: 'B. Infection Prevention and Control',
     title: 'Personal Protective Equipment',
     description: 'Proper selection, donning, and doffing techniques for Personal Protective Equipment (PPE) to ensure healthcare worker and patient safety.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1584036561566-b937380663ee?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1587560699334-cc4da63c24b9?auto=format&fit=crop&w=800&q=80',
     duration: '9 min',
     topics: ['PPE Selection', 'Donning and Doffing', 'Hazard Protection'],
     videoUrl: 'https://drive.google.com/file/d/1NYQcoZZNnUnLF23vC73ui_WDHCyYp9vB/view?usp=sharing',
@@ -758,7 +759,7 @@ export const MODULES: Module[] = [
     section: 'C. Patient Safety and Risk Management',
     title: 'International Patient Safety Goals',
     description: 'Overview of the IPSG standards designed to promote specific improvements in patient safety, highlighting problematic areas in health care.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1516574187841-693083f04968?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80',
     duration: '15 min',
     topics: ['IPSG 1-6', 'Patient Identification', 'Communication', 'Medication Safety'],
     videoUrl: 'https://drive.google.com/file/d/1APNQ1jJdSNHwnZjE4Qr5KHdvzrVuG5Ao/view?usp=sharing',
@@ -861,6 +862,128 @@ export const MODULES: Module[] = [
           'Completion of instrument, sponge, and needle counts (as applicable)'
         ],
         correctAnswerIndex: 3 // D
+      }
+    ]
+  },
+  {
+    id: 'm_ps_high_risk',
+    section: 'C. Patient Safety and Risk Management',
+    title: 'High-Alert Medications',
+    description: 'Protocols for the safe storage, prescribing, and administration of high-alert medications to prevent serious patient harm.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&q=80',
+    duration: '10 min',
+    topics: ['High-Alert Medications', 'Medication Safety', 'Storage Protocols'],
+    videoUrl: 'https://drive.google.com/file/d/18irpemN_A9wZuY-_2VMceHyZkCsg83fy/view?usp=drive_link',
+    questions: [
+      {
+        id: 'q_m_ps_ham_1',
+        text: 'What is the primary objective of the policy detailing the Independent Double Check (IDC) process?',
+        options: [
+          'To increase drug accessibility.',
+          'To reduce the cost of medication handling.',
+          'To provide a clear and consistent approach for conducting independent double checks to prevent medication errors and enhance patient safety.',
+          'To limit the number of staff who can administer medications.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_ham_2',
+        text: 'High-Alert Medications are defined as drugs with a high risk of significant harm, where even small errors can result in serious injury or death due to what characteristic?',
+        options: [
+          'Their high manufacturing cost.',
+          'Their narrow therapeutic range.',
+          'Their extremely long shelf life.',
+          'Their rapid onset of action.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_ham_3',
+        text: 'Which specific medication solution is explicitly noted as not included in the list of High-Alert Electrolytes and IV Solutions?',
+        options: [
+          'Sodium Bicarbonate IV.',
+          'Potassium Chloride IV.',
+          'Sodium Chloride 0.9%.',
+          'Magnesium Sulfate.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_ham_4',
+        text: 'Which document must both providers sign following the completion of an Independent Double Check?',
+        options: [
+          'The drug manufacturer\'s insert.',
+          'The original physician\'s order sheet.',
+          'The patient’s medication sheet.',
+          'The facility audit log.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_ham_5',
+        text: 'who is included in the scope of healthcare personnel required to follow the IDC procedures?',
+        options: [
+          'Only licensed nurses.',
+          'Pharmacists, nurses, and physicians.',
+          'Only physicians on duty.',
+          'Medical interns and students.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_ham_6',
+        text: 'To maintain objectivity during the IDC process, the sources mandate that a checker must not be involved in which specific action?',
+        options: [
+          'The pre-administration confirmation.',
+          'The documentation sign-off.',
+          'The initial preparation of the medication.',
+          'The calculation check.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_ham_7',
+        text: 'Which action is represented by the letter \'I\' in the "VERIFY" Mnemonic?',
+        options: [
+          'Inquire about patient history.',
+          'Identify correct route and confirm appropriate infusion rate.',
+          'Initiate the order.',
+          'Inspect the label for damage.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_ham_8',
+        text: 'When patient safety is at immediate risk, who may authorize an expedited IDC process in an emergency situation?',
+        options: [
+          'The Patient Safety Officer only.',
+          'The hospital administrator.',
+          'The attending physician or nurse.',
+          'The Internal Quality Audit Team.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_ham_9',
+        text: 'If an expedited IDC process is authorized during an emergency, what must happen post-administration, and by whom?',
+        options: [
+          'The dose is recorded and no further action is required.',
+          'A secondary verification should be completed as soon as possible post-administration, with a senior nurse or pharmacist reviewing the medication given.',
+          'The primary nurse must sign off within 72 hours.',
+          'The drug must be immediately stopped and restarted with a standard IDC.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_ham_10',
+        text: 'In the "VERIFY" Mnemonic, what is the action represented by the letter \'F\'?',
+        options: [
+          'Fulfill the medication order immediately.',
+          'Forecast potential adverse reactions.',
+          'Finalize by signing the patient’s medication sheet.',
+          'Find the supervising physician.'
+        ],
+        correctAnswerIndex: 2 // C
       }
     ]
   }
