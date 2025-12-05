@@ -619,6 +619,16 @@ export const MODULES: Module[] = [
       }
     ]
   },
+  {
+    id: 'm_ipc_cleaning',
+    section: 'B. Infection Prevention and Control',
+    title: 'Cleaning, Disinfection, and Sterilization',
+    description: 'Best practices for cleaning, disinfecting, and sterilizing medical equipment and environmental surfaces to prevent healthcare-associated infections.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?auto=format&fit=crop&w=800&q=80',
+    duration: '10 min',
+    topics: ['Spaulding Classification', 'Disinfection Levels', 'Sterilization Methods', 'Environmental Cleaning'],
+    videoUrl: 'https://drive.google.com/file/d/10rc_b-gN7iYTVmKLDBFaM9rbfPmRL9Cl/view?usp=sharing',
+  },
 
   // SECTION C
   {

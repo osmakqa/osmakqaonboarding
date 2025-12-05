@@ -5,7 +5,7 @@ import ModuleCard from './components/ModuleCard';
 import Player from './components/Player';
 import { Module, UserState, ModuleProgress, AppView } from './types';
 import { MODULES, PASSING_SCORE } from './constants';
-import { Trophy, Activity, Info } from 'lucide-react';
+import { Trophy, Activity, Star } from 'lucide-react';
 
 const INITIAL_PROGRESS: Record<string, ModuleProgress> = {};
 MODULES.forEach((m) => {
@@ -19,6 +19,24 @@ MODULES.forEach((m) => {
 function App() {
   const [view, setView] = useState<AppView>(AppView.DASHBOARD);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
+  
+  // Group modules by section
+  const sections = useMemo(() => {
+    const groups: Record<string, Module[]> = {};
+    MODULES.forEach(m => {
+      if (!groups[m.section]) {
+        groups[m.section] = [];
+      }
+      groups[m.section].push(m);
+    });
+    return groups;
+  }, []);
+
+  const sectionNames = useMemo(() => Object.keys(sections).sort(), [sections]);
+
+  // Tab State
+  const [activeTab, setActiveTab] = useState<string>(() => sectionNames[0] || '');
+
   const [userState, setUserState] = useState<UserState>(() => {
     // Load from local storage if available
     const saved = localStorage.getItem('osmak_qa_progress');
@@ -43,6 +61,13 @@ function App() {
       return changed ? { ...prev, progress: newProgress } : prev;
     });
   }, []);
+
+  // Ensure activeTab is valid
+  useEffect(() => {
+    if (sectionNames.length > 0 && !sections[activeTab]) {
+      setActiveTab(sectionNames[0]);
+    }
+  }, [sections, sectionNames, activeTab]);
 
   // Persist progress
   useEffect(() => {
@@ -90,18 +115,6 @@ function App() {
 
   const activeModule = activeModuleId ? MODULES.find(m => m.id === activeModuleId) : null;
 
-  // Group modules by section
-  const sections = useMemo(() => {
-    const groups: Record<string, Module[]> = {};
-    MODULES.forEach(m => {
-      if (!groups[m.section]) {
-        groups[m.section] = [];
-      }
-      groups[m.section].push(m);
-    });
-    return groups;
-  }, []);
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {view === AppView.DASHBOARD && (
@@ -138,15 +151,39 @@ function App() {
               </div>
             </section>
 
-            {/* Modules Sections */}
-            <div className="space-y-10">
-              {Object.keys(sections).sort().map(sectionName => (
-                <section key={sectionName}>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-200 pb-3">
-                    {sectionName}
-                  </h3>
+            {/* Tabbed Navigation */}
+            <div>
+              <div className="flex overflow-x-auto border-b border-gray-200 scrollbar-hide">
+                {sectionNames.map(sectionName => {
+                  const isActive = activeTab === sectionName;
+                  const modulesInSection = sections[sectionName] || [];
+                  const isSectionComplete = modulesInSection.every(m => userState.progress[m.id]?.isCompleted);
+
+                  return (
+                    <button
+                      key={sectionName}
+                      onClick={() => setActiveTab(sectionName)}
+                      className={`
+                        flex items-center gap-2 px-6 py-4 text-sm font-semibold transition-all whitespace-nowrap border-b-2
+                        ${isActive 
+                          ? 'border-osmak-green text-osmak-green bg-green-50/50' 
+                          : 'border-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50'}
+                      `}
+                    >
+                      {sectionName}
+                      {isSectionComplete && (
+                        <Star className="text-yellow-500 fill-yellow-500 animate-pulse" size={16} />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Modules Grid */}
+              <div className="mt-6 animate-fadeIn">
+                {sections[activeTab] ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {sections[sectionName].map(module => {
+                    {sections[activeTab].map(module => {
                       const modProgress = userState.progress[module.id];
                       // Guard against missing progress if local storage is old
                       if (!modProgress) return null;
@@ -161,8 +198,12 @@ function App() {
                       );
                     })}
                   </div>
-                </section>
-              ))}
+                ) : (
+                  <div className="text-center py-12 text-gray-500">
+                    Select a topic to view modules
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Helper Hint */}
