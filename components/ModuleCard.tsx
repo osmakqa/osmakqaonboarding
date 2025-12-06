@@ -11,7 +11,9 @@ interface ModuleCardProps {
 }
 
 const ModuleCard: React.FC<ModuleCardProps> = ({ module, progress, onStart }) => {
-  const isCompleted = progress.isCompleted;
+  // Safety fallback if progress is missing (e.g. new user from DB)
+  const safeProgress = progress || { isUnlocked: true, isCompleted: false, highScore: 0 };
+  const isCompleted = safeProgress.isCompleted;
   
   // All modules are now unlocked by default
   const canStart = true;
@@ -40,9 +42,9 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, progress, onStart }) =>
         </div>
         
         {/* Score Badge */}
-        {progress.highScore > 0 && (
-          <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-bold shadow-sm ${progress.highScore >= PASSING_SCORE ? 'bg-osmak-green text-white' : 'bg-osmak-red text-white'}`}>
-            Score: {progress.highScore}%
+        {safeProgress.highScore > 0 && (
+          <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-bold shadow-sm ${safeProgress.highScore >= PASSING_SCORE ? 'bg-osmak-green text-white' : 'bg-osmak-red text-white'}`}>
+            Score: {safeProgress.highScore}%
           </div>
         )}
       </div>

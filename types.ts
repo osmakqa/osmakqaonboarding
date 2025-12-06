@@ -1,4 +1,5 @@
 
+
 export interface Question {
   id: string;
   text: string;
@@ -42,5 +43,26 @@ export interface UserState {
 export enum AppView {
   DASHBOARD = 'DASHBOARD',
   PLAYER = 'PLAYER',
-  QUIZ = 'QUIZ' // Sub-state of player, but can be handled within Player component
+  QUIZ = 'QUIZ',
+  ADMIN_DASHBOARD = 'ADMIN_DASHBOARD'
+}
+
+export interface RegistrationData {
+  firstName: string;
+  lastName: string;
+  middleInitial: string;
+  birthday: string;
+  hospitalNumber: string; // Acts as the unique ID / Password
+  plantillaPosition: string;
+  role: UserRole | '';
+  division: string;
+  departmentOrSection: string;
+}
+
+export interface UserProfile extends RegistrationData {
+  progress: Record<string, ModuleProgress>;
+}
+
+export interface OrganizationalStructure {
+  [division: string]: string[]; // Array of sections/departments. Empty if none.
 }

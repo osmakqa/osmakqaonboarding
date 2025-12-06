@@ -1,8 +1,75 @@
 
-
-import { Module } from './types';
+import { Module, OrganizationalStructure } from './types';
 
 export const PASSING_SCORE = 90;
+
+export const ORGANIZATIONAL_STRUCTURE: OrganizationalStructure = {
+  "Clinical Division": [
+    "Department of Anaesthesiology",
+    "Department of Emergency, Pre-hospital and Disaster Medicine",
+    "Department of Family and Community Medicine",
+    "Department of Internal Medicine",
+    "Department of Obstetrics and Gynecology",
+    "Department of Otorhinolaryngology – Head and Neck Surgery",
+    "Department of Ophthalmology",
+    "Department of Pathology and Laboratories",
+    "Department of Pediatrics",
+    "Department of Radiology",
+    "Department of Physical and Rehabilitation Medicine",
+    "Department of Surgery",
+    "Graduate Medical Education"
+  ],
+  "Ancillary Division": [
+    "Cardiovascular Diagnostic Section",
+    "Respiratory Diagnostic Section",
+    "Laboratory Section",
+    "Radiology Section",
+    "Physical and Occupational Therapy Section",
+    "Others"
+  ],
+  "Nursing Division": [], // "that's it"
+  "Quality Assurance Division": [
+    "Infection Prevention and Control Section",
+    "Patient Safety and Risk Management Section",
+    "Program Planning and Management Section",
+    "Regulation and Accreditation Section",
+    "Process and Performance Improvement Section"
+  ],
+  "Central Information Management Division": [
+    "Admitting and Information Section",
+    "Health Records & Documentation Management Section",
+    "Communication Section",
+    "Information Technology Section",
+    "Others"
+  ],
+  "Internal Administrative Division": [
+    "Human Resource Management Section",
+    "Legal/Medico-legal Section",
+    "General Service Section",
+    "Property Management Section",
+    "Requisition Section",
+    "Supply Management Section",
+    "Others"
+  ],
+  "Allied Health Division": [
+    "Food and Nutrition Management Section",
+    "Pharmacy Section",
+    "Medical Social Service Section",
+    "Patient Experience Management Section",
+    "Housekeeping / Laundry and Linen Section",
+    "Chaplaincy Section",
+    "Others"
+  ],
+  "Research Development and Innovation Division": [],
+  "Financial Management Division": [
+    "Accounting Section",
+    "Budget Section",
+    "Cash Management Section",
+    "Billing Section",
+    "Claims Section"
+  ],
+  "Medical Directors Office": [] // "that's it"
+};
 
 export const MODULES: Module[] = [
   // SECTION A
@@ -135,7 +202,7 @@ export const MODULES: Module[] = [
     section: 'B. Infection Prevention and Control',
     title: 'Hand Hygiene Practices',
     description: 'Guidelines and protocols for minimizing the risk of spreading infections within the hospital environment. Includes hand hygiene, PPE usage, and isolation precautions.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1616327883713-33318d183f34?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=800&q=80',
     duration: '5 min',
     topics: ['Hand Hygiene', 'PPE', 'Isolation Protocols', 'Waste Disposal'],
     // Google Drive Link
@@ -866,7 +933,7 @@ export const MODULES: Module[] = [
     ]
   },
   {
-    id: 'm_ps_high_risk',
+    id: 'm_ps_high_alert',
     section: 'C. Patient Safety and Risk Management',
     title: 'High-Alert Medications',
     description: 'Protocols for the safe storage, prescribing, and administration of high-alert medications to prevent serious patient harm.',
