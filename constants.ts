@@ -1,4 +1,5 @@
 
+
 import { Module, OrganizationalStructure } from './types';
 
 export const PASSING_SCORE = 90;
@@ -78,7 +79,7 @@ export const MODULES: Module[] = [
     section: 'A. Quality Assurance',
     title: "Patient's Rights and Obligations",
     description: "Understanding the fundamental rights of patients and their corresponding responsibilities within the healthcare facility to ensure mutual respect and quality care.",
-    thumbnailUrl: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1682089159103-d09b46d1cce8?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
     duration: '8 min',
     topics: ['Patient Rights', 'Consent', 'Privacy', 'Patient Responsibilities'],
     videoUrl: 'https://drive.google.com/file/d/1TVls_xjsGhdOhwtB_pT8IV32zTkGip1U/view?usp=sharing',
@@ -195,6 +196,73 @@ export const MODULES: Module[] = [
       }
     ]
   },
+  {
+    id: 'm_qa_dataprivacy',
+    section: 'A. Quality Assurance',
+    title: 'Data Privacy in Healthcare',
+    description: 'An overview of the Data Privacy Act of 2012 (Republic Act No. 10173) and its critical role in protecting patient information within the healthcare setting.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80',
+    duration: '7 min',
+    topics: ['Data Privacy Act', 'Republic Act No. 10173', 'National Privacy Commission (NPC)', 'Personal Information'],
+    videoUrl: 'https://drive.google.com/file/d/1vUDby-oS6CDyFfGhrLvDiEjvkQ2vJCT_/view?usp=drive_link',
+    questions: [
+      {
+        id: 'q_m_qa_dp_1',
+        text: 'Ano ang buong pangalan ng batas na kilala bilang Republic Act No. 10173?',
+        options: [
+          'The Health Information Act of 2012',
+          'The National Security Act',
+          'The Data Privacy Act of 2012',
+          'The Data Protection and Compliance Act'
+        ],
+        correctAnswerIndex: 2
+      },
+      {
+        id: 'q_m_qa_dp_2',
+        text: 'Ang karapatan ng isang indibidwal na kontrolin ang koleksyon, pag-access, at paggamit ng personal na impormasyon tungkol sa kanya na nasa ilalim ng kontrol o kustodiya ng gobyerno o pribadong sektor ay tinukoy bilang:',
+        options: [
+          'Data Sharing Agreement',
+          'Data Processing Guideline',
+          'Data Security Protocol',
+          'Data privacy'
+        ],
+        correctAnswerIndex: 3
+      },
+      {
+        id: 'q_m_qa_dp_3',
+        text: 'Kapag ang mga kliyente ay nagtitiwala na ang kanilang impormasyon ay ligtas at secured, anong positibong resulta ang naipapakita?',
+        options: [
+          'Nangangailangan sila ng mas kaunting serbisyo.',
+          'Nagbibigay sila ng kumpleto at tumpak na data.',
+          'Sila ay exempted sa data processing.',
+          'Kailangan nilang pumirma ng waiver.'
+        ],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_qa_dp_4',
+        text: 'Ano ang tawag sa independiyenteng ahensya ng gobyerno na inatasan na pangasiwaan at ipatupad ang Data Privacy Act?',
+        options: [
+          'Department of Health (DOH)',
+          'Securities and Exchange Commission (SEC)',
+          'National Privacy Commission (NPC)',
+          'Philippine National Police (PNP)'
+        ],
+        correctAnswerIndex: 2
+      },
+      {
+        id: 'q_m_qa_dp_5',
+        text: 'Sa pangkalahatan, kanino inia-apply ang Data Privacy Act?',
+        options: [
+          'Sa pagproseso ng lahat ng uri ng personal na impormasyon',
+          'Sa mga kompanya lamang na nasa labas ng Pilipinas',
+          'Sa mga ahensya lamang ng gobyerno',
+          'Sa pagproseso lamang ng sensitive personal information'
+        ],
+        correctAnswerIndex: 0
+      }
+    ]
+  },
 
   // SECTION B
   {
@@ -202,7 +270,7 @@ export const MODULES: Module[] = [
     section: 'B. Infection Prevention and Control',
     title: 'Hand Hygiene Practices',
     description: 'Guidelines and protocols for minimizing the risk of spreading infections within the hospital environment. Includes hand hygiene, PPE usage, and isolation precautions.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?q=80&w=3870&?auto=format&fit=crop&w=800&q=80',
     duration: '5 min',
     topics: ['Hand Hygiene', 'PPE', 'Isolation Protocols', 'Waste Disposal'],
     // Google Drive Link
@@ -325,7 +393,7 @@ export const MODULES: Module[] = [
     section: 'B. Infection Prevention and Control',
     title: 'Standard and Isolation Precautions',
     description: 'Comprehensive guide on standard precautions for all patient care and specific isolation protocols (Contact, Droplet, Airborne) to prevent transmission of infectious agents.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1605289982774-9a6fef564df8?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1681995326134-cdc947934015?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
     duration: '12 min',
     topics: ['Standard Precautions', 'Transmission-Based Precautions', 'PPE Selection'],
     // Google Drive Link
@@ -448,7 +516,7 @@ export const MODULES: Module[] = [
     section: 'B. Infection Prevention and Control',
     title: 'Safe Injection Practices',
     description: 'Essential protocols for injection safety, including the "One Needle, One Syringe, Only One Time" rule, medication preparation, and proper sharps disposal.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1607326207820-989c6d53a0a2?q=80&w=3500&auto=format&fit=crop&w=800&q=8',
     duration: '6 min',
     topics: ['Injection Safety', 'Sharps Disposal', 'Aseptic Technique'],
     videoUrl: 'https://drive.google.com/file/d/1afg1XhiClidWjklgJulX40aD3ia4CO30/view?usp=sharing',
@@ -570,7 +638,7 @@ export const MODULES: Module[] = [
     section: 'B. Infection Prevention and Control',
     title: 'Personal Protective Equipment',
     description: 'Proper selection, donning, and doffing techniques for Personal Protective Equipment (PPE) to ensure healthcare worker and patient safety.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1587560699334-cc4da63c24b9?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1676325102985-e0ddd75244f0?q=80&w=3870&auto=format&fit=crop&w=800&q=8',
     duration: '9 min',
     topics: ['PPE Selection', 'Donning and Doffing', 'Hazard Protection'],
     videoUrl: 'https://drive.google.com/file/d/1NYQcoZZNnUnLF23vC73ui_WDHCyYp9vB/view?usp=sharing',
@@ -692,7 +760,7 @@ export const MODULES: Module[] = [
     section: 'B. Infection Prevention and Control',
     title: 'Cleaning, Disinfection, and Sterilization',
     description: 'Best practices for cleaning, disinfecting, and sterilizing medical equipment and environmental surfaces to prevent healthcare-associated infections.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1661507189943-b87c6ea3589e?q=80&w=3870&uto=format&fit=crop&w=800&q=8',
     duration: '10 min',
     topics: ['Spaulding Classification', 'Disinfection Levels', 'Sterilization Methods', 'Environmental Cleaning'],
     videoUrl: 'https://drive.google.com/file/d/10rc_b-gN7iYTVmKLDBFaM9rbfPmRL9Cl/view?usp=sharing',
@@ -826,7 +894,7 @@ export const MODULES: Module[] = [
     section: 'C. Patient Safety and Risk Management',
     title: 'International Patient Safety Goals',
     description: 'Overview of the IPSG standards designed to promote specific improvements in patient safety, highlighting problematic areas in health care.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1665203568927-bf0e58ee3d20?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
     duration: '15 min',
     topics: ['IPSG 1-6', 'Patient Identification', 'Communication', 'Medication Safety'],
     videoUrl: 'https://drive.google.com/file/d/1APNQ1jJdSNHwnZjE4Qr5KHdvzrVuG5Ao/view?usp=sharing',
@@ -1051,6 +1119,250 @@ export const MODULES: Module[] = [
           'Find the supervising physician.'
         ],
         correctAnswerIndex: 2 // C
+      }
+    ]
+  },
+  {
+    id: 'm_ps_pedia_fall',
+    section: 'C. Patient Safety and Risk Management',
+    title: 'Pediatric Fall Prevention and Management',
+    description: 'Guidelines for preventing and managing falls in pediatric patients using the Humpty Dumpty Scale and proper risk assessment protocols.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1708687044998-35e1afa39c58?q=80&w=2670&auto=format&fit=crop&w=800&q=80',
+    duration: '10 min',
+    topics: ['Humpty Dumpty Scale', 'Fall Risk Assessment', 'Pediatric Safety', 'Risk Management'],
+    videoUrl: 'https://drive.google.com/file/d/1ivBR_H4D_agJTqITZ8A_GrgmPSaIcFi0/view?usp=drive_link',
+    questions: [
+      {
+        id: 'q_m_ps_pedia_1',
+        text: 'A "Fall event" is defined as a sudden, unintended, uncontrolled, downward displacement of a patient’s body to where?',
+        options: [
+          'The bed side rail.',
+          'The floor or ground.',
+          'A nearby chair.',
+          'The closest staff member.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_pedia_2',
+        text: 'Which of the following is a responsibility of the General Services Section staff?',
+        options: [
+          'Reviewing prescribed medications.',
+          'Conducting a Root Cause Analysis for sentinel events.',
+          'Assessing and managing environmental risks on a weekly basis.',
+          'Conducting fall screening using the appropriate fall risk assessment form.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_pedia_3',
+        text: 'All Neonates (ages 0 to 29 days) are automatically classified under which fall risk category for in-patients?',
+        options: [
+          'Low Risk.',
+          'High Risk.',
+          'Moderate Risk.',
+          'Sentinel Event Risk.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_pedia_4',
+        text: 'What assessment tool is specifically used to assess fall risk for pediatric in-patients below 19 years old at Ospital ng Makati?',
+        options: [
+          'Modified Morse Fall Risk Assessment tool.',
+          'Fall Vulnerability Screening Tool.',
+          'The Humpty Dumpty Scale.',
+          'The Kinder 1 Fall Risk Assessment Tool.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_pedia_5',
+        text: 'What is the frequency of fall risk reassessment for a pediatric inpatient identified as Low Risk?',
+        options: [
+          'Every Shift.',
+          'Daily.',
+          'Weekly.',
+          'Upon discharge only.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_pedia_6',
+        text: 'When a pediatric patient encounters a fall event, what immediate action must the healthcare provider implement?',
+        options: [
+          'Immediate transfer to the NICU.',
+          'Post-fall assessment and management strategies.',
+          'Root Cause Analysis within 48 hours.',
+          'Waiting for the FPMC to convene.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_pedia_7',
+        text: 'A pediatric inpatient patient with a total fall risk score of 9 would be classified under which risk status?',
+        options: [
+          'High Risk.',
+          'Moderate Risk.',
+          'Low Risk.',
+          'Severe Risk.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_pedia_8',
+        text: 'For a pediatric inpatient classified as High Fall Risk, how frequently must the patient be assessed?',
+        options: [
+          'Daily.',
+          'Every shift.',
+          'Weekly.',
+          'Monthly.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_pedia_9',
+        text: 'What is the specific score range used to determine a Low Risk status for an Inpatient Pediatric patient based on the Humpty Dumpty Scale?',
+        options: [
+          '0 to 6.',
+          '7 to 11.',
+          '12 or above.',
+          '25 to 44.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_pedia_10',
+        text: 'For a pediatric inpatient, what mandatory action is required of the Nursing Staff to communicate fall risk status to other members of the healthcare team?',
+        options: [
+          'Conducting a Root Cause Analysis.',
+          'Educating patients and family members about the risk of injury from a fall.',
+          'Reviewing and updating relevant sections of the policy.',
+          'Facilitating training and awareness sessions.'
+        ],
+        correctAnswerIndex: 1 // B
+      }
+    ]
+  },
+  {
+    id: 'm_ps_adult_fall',
+    section: 'C. Patient Safety and Risk Management',
+    title: 'Adult Fall Prevention and Management',
+    description: 'Guidelines for preventing and managing falls in adult patients using the Modified Morse Fall Risk Assessment tool.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1620790647593-b3a6916c7d60?q=80&w=2574&auto=format&fit=crop&w=800&q=80',
+    duration: '10 min',
+    topics: ['Modified Morse Scale', 'Fall Risk Assessment', 'Adult Safety', 'Risk Management'],
+    videoUrl: 'https://drive.google.com/file/d/1m3eSq_BxMktFtz4fD90aAIfmRUgCN7mU/view?usp=sharing',
+    questions: [
+      {
+        id: 'q_m_ps_adult_1',
+        text: 'Which assessment tool is used for assessing in-patients aged 19 years old and above?',
+        options: [
+          'The Humpty Dumpty Scale.',
+          'Modified Morse Fall Risk Assessment tool.',
+          'The Kinder 1 Fall Risk Assessment Tool.',
+          'The Fall Vulnerability Screening Tool.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_adult_2',
+        text: 'What is the score range defining an adult Low Fall Risk patient?',
+        options: [
+          '45 to 125.',
+          '7 to 11.',
+          '25 to 44.',
+          '0 to 24.'
+        ],
+        correctAnswerIndex: 3 // D
+      },
+      {
+        id: 'q_m_ps_adult_3',
+        text: 'What is the risk status assigned to an adult patient with a total fall risk score of 40?',
+        options: [
+          'Low Fall Risk.',
+          'Moderate Fall Risk.',
+          'High Fall Risk.',
+          'Extreme Risk.'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_adult_4',
+        text: 'According to the Modified Morse Fall Scale, what is the required score if an adult patient has an immediate history of falls within the current admission or the last three months?',
+        options: [
+          'Score 0.',
+          'Score 15.',
+          'Score 25.',
+          'Score 45.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_adult_5',
+        text: 'What is the minimum score required for an adult patient to be classified as High Fall Risk?',
+        options: [
+          '0.',
+          '25.',
+          '45.',
+          '125.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_adult_6',
+        text: 'If an adult patient is admitted to the Intensive Care Unit (ICU), what is their mandatory fall risk classification?',
+        options: [
+          'Low Risk.',
+          'Moderate Risk.',
+          'High Fall Risk.',
+          'Needs a full assessment first.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_adult_7',
+        text: 'For an adult outpatient who is screened as high fall risk, which factor relating to mobility is considered?',
+        options: [
+          'Using a cane, walker, or wheelchair.',
+          'Being able to walk normally.',
+          'Using a bed pan.',
+          'Having only minor injuries previously.'
+        ],
+        correctAnswerIndex: 0 // A
+      },
+      {
+        id: 'q_m_ps_adult_8',
+        text: 'What is the definition of a Sentinel Event?',
+        options: [
+          'Any fall resulting in minor injury.',
+          'A sudden, unintended, uncontrolled, downward displacement of a patient’s body to the ground.',
+          'A patient safety event that has resulted in an unanticipated death or major permanent loss of function not primarily related to the natural course of the patient’s illness or underlying condition.',
+          'An event that fails to achieve what was intended for the patient, regardless of outcome.'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_adult_9',
+        text: 'If an adult inpatient is transferred to a different unit, what protocol dictates that a fall risk reassessment must be done?',
+        options: [
+          'Upon transfer to another Unit / Area.',
+          'Every shift, regardless of transfer.',
+          'Quarterly.',
+          'Only if the patient\'s condition changes.'
+        ],
+        correctAnswerIndex: 0 // A
+      },
+      {
+        id: 'q_m_ps_adult_10',
+        text: 'If a fall event occurs in the Ambulatory Care area, the definition of a "Minor Injury" is listed as which of the following?',
+        options: [
+          'Hip fracture.',
+          'Death.',
+          'Head trauma.',
+          'Abrasion, bruise, or minor laceration.'
+        ],
+        correctAnswerIndex: 3 // D
       }
     ]
   }

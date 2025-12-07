@@ -93,7 +93,7 @@ export const dataService = {
     }
 
     // Use the generic mapper, ensuring progress is initialized
-    const row = { ...mapProfileToRow(data), progress: {} };
+    const row = { ...mapProfileToRow(data), hospital_number: data.hospitalNumber, progress: {} };
     
     const { data: insertedData, error } = await supabase
       .from('users')
@@ -138,6 +138,28 @@ export const dataService = {
     }
     
     return mapRowToProfile(updatedData as UserDBRow);
+  },
+
+  /**
+   * Delete a user by their hospital number
+   */
+  async deleteUser(hospitalNumber: string): Promise<boolean> {
+    if (!isSupabaseConfigured) {
+      alert('Cannot delete user: Supabase is not configured.');
+      return false;
+    }
+
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('hospital_number', hospitalNumber);
+
+    if (error) {
+      handleSupabaseError(error, 'User Deletion');
+      return false;
+    }
+
+    return true;
   },
 
   /**

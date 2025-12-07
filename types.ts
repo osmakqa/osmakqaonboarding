@@ -27,9 +27,11 @@ export interface ModuleProgress {
 
 export type UserRole = 
   | 'QA Admin' 
+  | 'Head / Assistant Head'
   | 'Doctor' 
   | 'Nurse' 
-  | 'Specialized Nurse' 
+  | 'Nurse (High-risk Area)' // Renamed from Specialized Nurse
+  | 'Other Clinical'
   | 'Non-clinical' 
   | 'Medical Intern' 
   | 'Others';

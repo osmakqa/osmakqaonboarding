@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import ModuleCard from './components/ModuleCard';
@@ -77,31 +78,54 @@ function App() {
         effectiveRole = adminPreviewRole as UserRole;
     }
 
-    // QA Admin (All) sees everything
-    if (effectiveRole === 'QA Admin') {
+    // QA Admin (All) and Head / Assistant Head see everything
+    if (effectiveRole === 'QA Admin' || effectiveRole === 'Head / Assistant Head') {
       return MODULES;
     }
 
     return MODULES.filter(m => {
-      // 1. Doctors, Nurse, Specialized Nurse, Physician
-      if (['Doctor', 'Physician', 'Nurse', 'Specialized Nurse'].includes(effectiveRole as string)) {
+      // Data privacy module is for everyone
+      if (m.id === 'm_qa_dataprivacy') return true;
+
+      // 1. Doctors, Nurse, Nurse (High-risk Area)
+      if (['Doctor', 'Nurse', 'Nurse (High-risk Area)'].includes(effectiveRole as string)) {
         return m.id !== 'm_ps_1';
       }
+      
       // 2. Non-Clinical, Others
       if (['Non-clinical', 'Others'].includes(effectiveRole as string)) {
         if (m.id === 'm_qa_1' || m.id === 'm1') return true;
         return false;
       }
+      
       // 3. Medical Intern
       if (effectiveRole === 'Medical Intern') {
         if (m.id === 'm_qa_1') return true;
         if (m.section === 'B. Infection Prevention and Control') return true;
         if (m.id === 'm_ps_2') return true;
+        if (m.id === 'm_ps_pedia_fall') return true;
+        if (m.id === 'm_ps_adult_fall') return true;
         return false;
       }
-      return false;
+
+      // 4. Other Clinical
+      if (effectiveRole === 'Other Clinical') {
+        // Display all Quality Assurance modules
+        if (m.section === 'A. Quality Assurance') return true;
+        
+        // Display hand hygiene (m1), standard and isolation precautions (m2), PPE (m_ipc_ppe)
+        if (['m1', 'm2', 'm_ipc_ppe'].includes(m.id)) return true;
+        
+        // Display IPSG (m_ps_2)
+        if (m.id === 'm_ps_2') return true;
+        
+        return false;
+      }
+
+      return false; // Fallback for roles without specific rules
     });
   }, [currentUser, adminPreviewRole]);
+
 
   // Group modules by section based on the FILTERED list
   const sections = useMemo(() => {
@@ -184,6 +208,15 @@ function App() {
     } finally {
         setIsRegistering(false);
     }
+  };
+
+  const handleDeleteUser = async (hospitalNumber: string) => {
+    const success = await dataService.deleteUser(hospitalNumber);
+    if (success) {
+      // Optimistic update locally
+      setUsers(prevUsers => prevUsers.filter(u => u.hospitalNumber !== hospitalNumber));
+    }
+    // Error is handled via alerts in dataService, so no need for else block here.
   };
 
   const handleLogout = () => {
@@ -318,9 +351,11 @@ function App() {
                           className="bg-gray-800 text-white border-none rounded px-2 py-1 text-xs focus:ring-1 focus:ring-osmak-green outline-none cursor-pointer"
                       >
                           <option value="All">QA Admin (View All)</option>
+                          <option value="Head / Assistant Head">Head / Assistant Head</option>
                           <option value="Doctor">Doctor</option>
                           <option value="Nurse">Nurse</option>
-                          <option value="Specialized Nurse">Specialized Nurse</option>
+                          <option value="Nurse (High-risk Area)">Nurse (High-risk Area)</option>
+                          <option value="Other Clinical">Other Clinical</option>
                           <option value="Medical Intern">Medical Intern</option>
                           <option value="Non-clinical">Non-clinical</option>
                           <option value="Others">Others</option>
@@ -342,6 +377,7 @@ function App() {
                 users={users} 
                 onRegisterUser={handleRegister} 
                 onUpdateUser={handleUpdateUser}
+                onDeleteUser={handleDeleteUser}
                 isLoading={isRegistering}
             />
         </main>

@@ -1,27 +1,31 @@
 
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { UserProfile, RegistrationData, UserRole, OrganizationalStructure, Module } from '../types';
 import { MODULES, ORGANIZATIONAL_STRUCTURE, PASSING_SCORE } from '../constants';
-import { Search, UserPlus, CheckCircle, XCircle, FileText, User, Filter, RefreshCw, BarChart3, Users, Loader2, Pencil, Save } from 'lucide-react';
+import { Search, UserPlus, CheckCircle, XCircle, FileText, User, Filter, RefreshCw, BarChart3, Users, Loader2, Pencil, Save, Trash2, ShieldCheck } from 'lucide-react';
 
 interface AdminDashboardProps {
   users: UserProfile[];
   onRegisterUser: (data: RegistrationData) => void;
   onUpdateUser: (hospitalNumber: string, data: RegistrationData) => void;
+  onDeleteUser: (hospitalNumber: string) => void;
   isLoading?: boolean;
 }
 
 const REGISTRATION_ROLES: UserRole[] = [
     'QA Admin',
+    'Head / Assistant Head',
     'Doctor',
     'Nurse',
-    'Specialized Nurse',
+    'Nurse (High-risk Area)', // Renamed from Specialized Nurse
+    'Other Clinical',
     'Medical Intern',
     'Non-clinical',
     'Others'
   ];
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, onUpdateUser, isLoading = false }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, onUpdateUser, onDeleteUser, isLoading = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDivision, setFilterDivision] = useState('');
   const [filterDept, setFilterDept] = useState('');
@@ -31,6 +35,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [editFormData, setEditFormData] = useState<RegistrationData | null>(null);
+  
+  // Deletion State
+  const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
 
   // --- Registration Form State ---
   const [regData, setRegData] = useState<RegistrationData>({
@@ -75,6 +84,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
     if (editingUser && editFormData) {
         onUpdateUser(editingUser.hospitalNumber, editFormData);
         setEditingUser(null);
+    }
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deletePassword !== 'osmak123') {
+        setDeleteError('Incorrect password.');
+        return;
+    }
+    if (userToDelete) {
+        onDeleteUser(userToDelete.hospitalNumber);
+        setUserToDelete(null);
+        setDeletePassword('');
+        setDeleteError('');
     }
   };
   
@@ -209,8 +231,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                                  <td className="px-6 py-4 text-center">
                                      {stats.percentage >= 100 ? <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold"><CheckCircle size={12} /> Completed</span> : <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">In Progress</span>}
                                  </td>
-                                 <td className="px-6 py-4 text-center">
+                                 <td className="px-6 py-4 text-center whitespace-nowrap">
                                      <button onClick={(e) => { e.stopPropagation(); setEditingUser(user); }} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-colors" title="Edit Employee"><Pencil size={16} /></button>
+                                     <button onClick={(e) => { e.stopPropagation(); setUserToDelete(user); }} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-100 rounded-full transition-colors" title="Delete Employee"><Trash2 size={16} /></button>
                                  </td>
                              </tr>
                          );
@@ -314,6 +337,50 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                   </div>
               </div>
           </div>
+      )}
+
+      {/* Delete User Modal */}
+      {userToDelete && (
+        <div className="fixed inset-0 z-[300] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden">
+                <div className="bg-red-600 text-white p-4">
+                    <h3 className="font-bold text-lg">Confirm Deletion</h3>
+                </div>
+                <div className="p-6 space-y-4">
+                    <p className="text-gray-700">
+                        Are you sure you want to permanently delete the profile for <span className="font-bold">{userToDelete.firstName} {userToDelete.lastName}</span>?
+                        <br/>
+                        <span className="text-red-700 font-semibold">This action cannot be undone.</span>
+                    </p>
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
+                            <ShieldCheck size={16} className="text-gray-400" />
+                            Admin Password
+                        </label>
+                        <input
+                          type="password"
+                          value={deletePassword}
+                          onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(''); }}
+                          placeholder="Enter 'osmak123' to confirm"
+                          className={`block w-full px-3 py-2 text-sm rounded-lg border ${deleteError ? 'border-red-500 ring-red-500' : 'border-gray-300 focus:ring-red-500 focus:border-red-500'} bg-white text-gray-900`}
+                          autoFocus
+                        />
+                        {deleteError && <p className="text-xs text-red-600 mt-1">{deleteError}</p>}
+                    </div>
+                </div>
+                <div className="bg-gray-50 p-4 flex justify-end gap-3">
+                    <button onClick={() => { setUserToDelete(null); setDeletePassword(''); setDeleteError(''); }} className="px-4 py-2 bg-gray-200 text-gray-800 rounded font-medium hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button 
+                        onClick={handleDeleteConfirm}
+                        disabled={deletePassword !== 'osmak123'}
+                        className="px-4 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                        <Trash2 size={16} />
+                        Delete Profile
+                    </button>
+                </div>
+            </div>
+        </div>
       )}
 
       {showRegisterModal && (

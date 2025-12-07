@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { UserRole, RegistrationData, UserProfile } from '../types';
-import { LogIn, UserPlus, ArrowLeft, Check, User, Hash, ShieldAlert, Loader2 } from 'lucide-react';
+import { LogIn, UserPlus, ArrowLeft, Check, User, Hash, ShieldAlert, Loader2, AlertTriangle } from 'lucide-react';
 import { ORGANIZATIONAL_STRUCTURE } from '../constants';
 
 interface LoginModalProps {
@@ -12,9 +12,11 @@ interface LoginModalProps {
 }
 
 const REGISTRATION_ROLES: UserRole[] = [
-  'Doctor', // Changed from Physician
+  'Head / Assistant Head',
+  'Doctor', 
   'Nurse',
-  'Specialized Nurse',
+  'Nurse (High-risk Area)', // Renamed from Specialized Nurse
+  'Other Clinical',
   'Medical Intern',
   'Non-clinical',
   'Others'
@@ -82,13 +84,20 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
     // 3. Fallback for demo accounts if not in the users list (backward compatibility)
     // We treat the "username" from the prompt as the Hospital Number, and require "Demo" as last name
     // OR just match the ID if it matches the specific keywords
-    const demoRoles = ['doctor', 'nurse', 'specialized nurse', 'medical intern', 'non-clinical', 'others'];
-    if (demoRoles.includes(hospitalIdInput)) {
+    const demoRoles = ['head', 'doctor', 'nurse', 'specialized nurse', 'other clinical', 'medical intern', 'non-clinical', 'others'];
+    
+    // Check if the hospital ID input loosely matches a role for demo purposes
+    const isDemoRole = demoRoles.some(r => hospitalIdInput.includes(r) || hospitalIdInput === 'head');
+
+    if (isDemoRole) {
          // Create a temporary profile for the demo user
          let roleName: UserRole = 'Others';
-         if (hospitalIdInput === 'doctor') roleName = 'Doctor';
+         
+         if (hospitalIdInput === 'head') roleName = 'Head / Assistant Head';
+         else if (hospitalIdInput === 'doctor') roleName = 'Doctor';
          else if (hospitalIdInput === 'nurse') roleName = 'Nurse';
-         else if (hospitalIdInput === 'specialized nurse') roleName = 'Specialized Nurse';
+         else if (hospitalIdInput === 'specialized nurse') roleName = 'Nurse (High-risk Area)';
+         else if (hospitalIdInput === 'other clinical') roleName = 'Other Clinical';
          else if (hospitalIdInput === 'medical intern') roleName = 'Medical Intern';
          else if (hospitalIdInput === 'non-clinical') roleName = 'Non-clinical';
 
@@ -172,6 +181,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
           </div>
           
           <div className="p-8">
+            {/* Beta / Testing Notice - Remove this block when production ready */}
+            <div className="mb-6 p-3 bg-orange-50 border border-orange-200 text-orange-800 text-xs rounded-lg flex items-start gap-3">
+               <div className="p-1.5 bg-orange-100 text-orange-600 rounded-full shrink-0">
+                  <AlertTriangle size={16} />
+               </div>
+               <div>
+                  <span className="font-bold block text-sm mb-0.5">Beta Feature: Testing in Progress</span>
+                  <span className="opacity-90">The system is currently under testing. Data may be periodically reset.</span>
+               </div>
+            </div>
+            {/* End Beta Notice */}
+
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               
               {/* Last Name */}
@@ -212,13 +233,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                   {loginError}
                 </div>
               )}
-
-              {/* Demo Hints */}
-              <div className="text-xs bg-blue-50 text-blue-800 p-3 rounded border border-blue-100 space-y-1">
-                <p className="font-bold">Demo:</p>
-                <p>Use Last Name: <b>User</b> and Hospital Number: <b>doctor</b>, <b>nurse</b>, etc.</p>
-                <p className="mt-1">For QA Admin: ID <b>999999</b> (Any last name)</p>
-              </div>
 
               <button
                 type="submit"
