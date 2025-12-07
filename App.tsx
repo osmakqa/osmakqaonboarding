@@ -102,9 +102,13 @@ function App() {
       if (effectiveRole === 'Medical Intern') {
         if (m.id === 'm_qa_1') return true;
         if (m.section === 'B. Infection Prevention and Control') return true;
+        if (m.section === 'D. Quality Management System') return true; // Add QMS
+        if (m.section === 'E. Advanced Infection Prevention and Control') return true; // Add Adv IPC
         if (m.id === 'm_ps_2') return true;
         if (m.id === 'm_ps_pedia_fall') return true;
         if (m.id === 'm_ps_adult_fall') return true;
+        if (m.id === 'm_ps_error_abbrev') return true;
+        if (m.id === 'm_ipc_waste') return true;
         return false;
       }
 
@@ -113,11 +117,21 @@ function App() {
         // Display all Quality Assurance modules
         if (m.section === 'A. Quality Assurance') return true;
         
-        // Display hand hygiene (m1), standard and isolation precautions (m2), PPE (m_ipc_ppe)
-        if (['m1', 'm2', 'm_ipc_ppe'].includes(m.id)) return true;
+        // Display all QMS modules
+        if (m.section === 'D. Quality Management System') return true;
+        
+        // Display hand hygiene (m1), standard and isolation precautions (m2), PPE (m_ipc_ppe), waste management (m_ipc_waste)
+        if (['m1', 'm2', 'm_ipc_ppe', 'm_ipc_waste'].includes(m.id)) return true;
+
+        // Display Advanced IPC Modules if specific ones are needed, or all of them. 
+        // Assuming Other Clinical might need advanced IPC too:
+        if (m.section === 'E. Advanced Infection Prevention and Control') return true;
         
         // Display IPSG (m_ps_2)
         if (m.id === 'm_ps_2') return true;
+
+        // Display Error Prone Abbrev
+        if (m.id === 'm_ps_error_abbrev') return true;
         
         return false;
       }
@@ -178,7 +192,7 @@ function App() {
         if (newUser) {
             setUsers(prev => [...prev, newUser]);
             // Auto login if it came from the LoginModal (not admin dashboard)
-            if (!isLoggedIn) {
+            if (!isLoggedIn && newUser.role) {
                 handleLogin(newUser.role as UserRole, newUser);
             }
         }
@@ -315,7 +329,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header 
-        userRole={currentUser?.role}
+        userRole={currentUser?.role || undefined}
         onLogout={handleLogout}
         onLogoClick={() => setView(currentUser?.role === 'QA Admin' ? AppView.ADMIN_DASHBOARD : AppView.DASHBOARD)}
       />
@@ -452,9 +466,9 @@ function App() {
               )}
             </section>
 
-            {/* Tabbed Navigation */}
-            <div>
-              <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide mb-4">
+            {/* Tabbed Navigation - Improved with flex-wrap and better styling */}
+            <div className="mb-6">
+              <div className="flex flex-wrap gap-2">
                 {sectionNames.length > 0 ? sectionNames.map(sectionName => {
                   const isActive = activeTab === sectionName;
                   const modulesInSection = sections[sectionName] || [];
@@ -465,14 +479,14 @@ function App() {
                       key={sectionName}
                       onClick={() => setActiveTab(sectionName)}
                       className={`
-                        flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap rounded-full border
+                        flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all rounded-lg border shadow-sm
                         ${isActive 
-                          ? 'border-osmak-green bg-osmak-green text-white shadow-md' 
-                          : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-100'}
+                          ? 'border-osmak-green bg-osmak-green text-white ring-2 ring-osmak-green ring-offset-1' 
+                          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300'}
                       `}
                     >
                       {sectionName}
-                      {isSectionComplete && <Star size={16} className="fill-yellow-400 text-yellow-400 ml-1" />}
+                      {isSectionComplete && <Star size={16} className={`ml-1 ${isActive ? 'text-yellow-300 fill-yellow-300' : 'text-yellow-500 fill-yellow-500'}`} />}
                     </button>
                   );
                 }) : (

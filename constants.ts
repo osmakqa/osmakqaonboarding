@@ -765,6 +765,128 @@ export const MODULES: Module[] = [
     topics: ['Spaulding Classification', 'Disinfection Levels', 'Sterilization Methods', 'Environmental Cleaning'],
     videoUrl: 'https://drive.google.com/file/d/10rc_b-gN7iYTVmKLDBFaM9rbfPmRL9Cl/view?usp=sharing',
   },
+  {
+    id: 'm_ipc_waste',
+    section: 'B. Infection Prevention and Control',
+    title: 'Healthcare Waste Management',
+    description: 'Guidelines on waste segregation, color coding, and disposal protocols to handle hazardous and non-hazardous hospital waste safely.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1763100351709-77023f1db28d?q=80&w=2670&auto=format&fit=crop&w=800&q=80',
+    duration: '10 min',
+    topics: ['Waste Segregation', 'Color Coding', 'Hazardous Waste', 'Sharps Disposal'],
+    videoUrl: 'https://drive.google.com/file/d/1Lg1IZW4c1GYfrZ8cF9dw-hXA_W5Zwkb8/view?usp=drive_link',
+    questions: [
+      {
+        id: 'q_m_ipc_waste_1',
+        text: 'What is the initial step in the defined stream of the Healthcare Waste Management System?',
+        options: [
+          'Waste Collection',
+          'Waste Transport',
+          'Waste Storage',
+          'Waste Segregation'
+        ],
+        correctAnswerIndex: 3 // D
+      },
+      {
+        id: 'q_m_ipc_waste_2',
+        text: 'What color plastic trash bag is designated for the collection of Biodegradable waste?',
+        options: [
+          'Yellow',
+          'Black',
+          'Green',
+          'Clear'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ipc_waste_3',
+        text: 'Hospital wastes are broadly classified into general waste (non-hazardous waste) and what other main classification?',
+        options: [
+          'Recyclable waste',
+          'Hazardous waste',
+          'Biodegradable waste',
+          'Sharps'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ipc_waste_4',
+        text: 'Which category of waste is described as comparable to domestic waste and does not pose a special handling problem or hazard to human health?',
+        options: [
+          'Infectious Waste',
+          'Sharps',
+          'General Waste',
+          'Radioactive Waste'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ipc_waste_5',
+        text: 'All needles, scalpels, blades, and broken glass must be discarded in what specific type of container?',
+        options: [
+          'Green plastic trash bags',
+          'Puncture proof container',
+          'Clear plastic trash bags',
+          'Standard household garbage bins'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ipc_waste_6',
+        text: 'What color plastic trash bag is designated for the collection of Infectious wastes (dry and wet)?',
+        options: [
+          'Green',
+          'Clear',
+          'Black',
+          'Yellow'
+        ],
+        correctAnswerIndex: 3 // D
+      },
+      {
+        id: 'q_m_ipc_waste_7',
+        text: 'Which type of waste includes kitchen leftover food, fruit peelings, and non-infectious leftover foods?',
+        options: [
+          'Infectious Waste',
+          'General Waste',
+          'Pharmaceutical Waste',
+          'Sharps'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ipc_waste_8',
+        text: 'Infectious Waste is defined as waste that is suspected to contain pathogens in sufficient concentration or quantity to cause what outcome in susceptible hosts?',
+        options: [
+          'Mutations',
+          'Environmental contamination',
+          'Property damage',
+          'Disease'
+        ],
+        correctAnswerIndex: 3 // D
+      },
+      {
+        id: 'q_m_ipc_waste_9',
+        text: 'Which waste minimization measure involves collecting waste and processing it into something new?',
+        options: [
+          'Re-use',
+          'Reduction at source',
+          'Residual disposal',
+          'Recycling'
+        ],
+        correctAnswerIndex: 3 // D
+      },
+      {
+        id: 'q_m_ipc_waste_10',
+        text: 'What must be done to plastic trash bags that are three-quarters (¾) full of waste?',
+        options: [
+          'They must be burned.',
+          'They must be weighed only.',
+          'They must be labeled with the area where collected and sealed.',
+          'They must be immediately dumped in a sanitary landfill.'
+        ],
+        correctAnswerIndex: 2 // C
+      }
+    ]
+  },
 
   // SECTION C
   {
@@ -1363,6 +1485,415 @@ export const MODULES: Module[] = [
           'Abrasion, bruise, or minor laceration.'
         ],
         correctAnswerIndex: 3 // D
+      }
+    ]
+  },
+  {
+    id: 'm_ps_error_abbrev',
+    section: 'C. Patient Safety and Risk Management',
+    title: 'Error Prone Abbreviation',
+    description: 'Guidelines on avoiding dangerous abbreviations in medical documentation to prevent medication errors and misinterpretations.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1758691461990-03b49d969495?q=80&w=3732&auto=format&fit=crop&w=800&q=80',
+    duration: '8 min',
+    topics: ['Medical Abbreviations', 'Documentation Safety', 'Medication Errors'],
+    videoUrl: 'https://drive.google.com/file/d/1F286B7XrGEgI7nW14F7TYgY_G_tpWe6z/view?usp=drive_link',
+    questions: [
+      {
+        id: 'q_m_ps_error_abbrev_1',
+        text: "What does the intended meaning of the 'DO NOT USE' abbreviation Q.D., QD, q.d., or qd?",
+        options: [
+          'Four times daily',
+          'Every other day',
+          'Every day',
+          'Nightly at bedtime'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_error_abbrev_2',
+        text: "What is the recommended substitute for the error-prone abbreviation cc (cubic centimeters)?",
+        options: [
+          'CU',
+          'L',
+          'mL',
+          'Cm'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_error_abbrev_3',
+        text: "When the abbreviation Per os (By mouth, orally) is used, what is the 'os' specifically mistaken for, potentially leading to incorrect administration?",
+        options: [
+          'Left ear (AS)',
+          'Left eye (OS, oculus sinister)',
+          'Right eye (OD)',
+          'Once daily (o.d.)'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_error_abbrev_4',
+        text: "What is the standard recommendation to avoid the risk of misinterpretation caused by lack of a leading zero (e.g., .5 mg)?",
+        options: [
+          'Do not use trailing zeros',
+          'Use a leading zero before a decimal point when the dose is less than one measurement unit',
+          'Express all doses in whole numbers',
+          'Use fractions instead of decimals'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_error_abbrev_5',
+        text: "The abbreviation l (lowercase L for liter) is listed as 'USE WITH CAUTION' because it can be mistaken for what?",
+        options: [
+          'Milliliter (ml)',
+          'The letter \'I\'',
+          'The number 1',
+          'The number 7'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_error_abbrev_6',
+        text: "What is the recommended substitute for the error-prone use of the abbreviation µg (microgram)?",
+        options: [
+          'Use Mg',
+          'Use mg',
+          'Use mcg',
+          'Use unit(s)'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_error_abbrev_7',
+        text: "The primary objective of the policy on error-prone abbreviations is to promote patient safety by minimizing the use of abbreviations, symbols, and drug designations that are prone to what specific issue?",
+        options: [
+          'Excessive charting time',
+          'Misinterpretation',
+          'Staff shortages',
+          'Conflict between departments'
+        ],
+        correctAnswerIndex: 1 // B
+      },
+      {
+        id: 'q_m_ps_error_abbrev_8',
+        text: "Which of the following describes the category 'DO NOT USE' in the policy's definition of terms?",
+        options: [
+          'Abbreviations that may be used with proper context',
+          'Abbreviations that should only be used by physicians',
+          'A classification for abbreviations, symbols, or designations that are strictly prohibited in all documentation',
+          'Abbreviations that are reviewed annually'
+        ],
+        correctAnswerIndex: 2 // C
+      },
+      {
+        id: 'q_m_ps_error_abbrev_9',
+        text: "According to the policy's mandatory familiarization requirements, who is mandated to review and familiarize themselves with the updated list of error-prone abbreviations?",
+        options: [
+          'Only the Patient Safety and Risk Management Section',
+          'Only physicians and pharmacists',
+          'All healthcare personnel, including physicians, nurses, pharmacists, and allied health professionals',
+          'Only administrative personnel responsible for transcribing medical documentation'
+        ],
+        correctAnswerIndex: 2 // C
+      }
+    ]
+  },
+  
+  // SECTION D: Quality Management System
+  {
+    id: 'm_qms_iso',
+    section: 'D. Quality Management System',
+    title: 'ISO 9001 Standards',
+    description: 'An introduction to the ISO 9001:2015 Quality Management System, focusing on customer satisfaction, process approach, and continuous improvement in healthcare.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
+    duration: '12 min',
+    topics: ['ISO 9001:2015', 'Quality Management', 'Continuous Improvement', 'PDCA Cycle'],
+    videoUrl: 'https://www.youtube.com/watch?v=JpM2w546dAQ', // Generic educational placeholder
+    questions: [
+      {
+        id: 'q_m_qms_iso_1',
+        text: 'What is the primary focus of ISO 9001:2015?',
+        options: ['Cost reduction', 'Customer satisfaction', 'Staff scheduling', 'Building maintenance'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_qms_iso_2',
+        text: 'Which cycle is fundamental to the ISO 9001 process approach?',
+        options: ['Plan-Do-Check-Act (PDCA)', 'Stop-Look-Listen', 'Find-Fix-Forget', 'Hire-Train-Retain'],
+        correctAnswerIndex: 0
+      },
+      {
+        id: 'q_m_qms_iso_3',
+        text: 'Who is responsible for the effectiveness of the Quality Management System?',
+        options: ['Only the Quality Manager', 'Top Management', 'External Auditors', 'The IT Department'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_qms_iso_4',
+        text: 'What does "evidence-based decision making" imply in ISO 9001?',
+        options: ['Decisions based on gut feeling', 'Decisions based on data and analysis', 'Decisions based on seniority', 'Decisions based on budget only'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_qms_iso_5',
+        text: 'Which of the following is NOT a quality management principle?',
+        options: ['Customer focus', 'Leadership', 'Rapid expansion', 'Engagement of people'],
+        correctAnswerIndex: 2
+      }
+    ]
+  },
+  {
+    id: 'm_qms_rca',
+    section: 'D. Quality Management System',
+    title: 'Root Cause Analysis',
+    description: 'Techniques for identifying the underlying causes of problems or incidents to prevent recurrence, including the 5 Whys and Fishbone Diagram.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
+    duration: '10 min',
+    topics: ['Root Cause Analysis', '5 Whys', 'Fishbone Diagram', 'Problem Solving'],
+    videoUrl: 'https://www.youtube.com/watch?v=sC6w6mN_GvU', // Generic educational placeholder
+    questions: [
+      {
+        id: 'q_m_qms_rca_1',
+        text: 'What is the primary goal of Root Cause Analysis (RCA)?',
+        options: ['To assign blame', 'To identify the symptom', 'To prevent recurrence of the problem', 'To complete paperwork'],
+        correctAnswerIndex: 2
+      },
+      {
+        id: 'q_m_qms_rca_2',
+        text: 'Which tool is also known as the Ishikawa diagram?',
+        options: ['Pareto Chart', 'Fishbone Diagram', 'Scatter Plot', 'Control Chart'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_qms_rca_3',
+        text: 'In the "5 Whys" technique, what action do you take?',
+        options: ['Ask "Why" five times to drill down to the root cause', 'Ask five different people their opinion', 'Wait five days before investigating', 'List five possible solutions'],
+        correctAnswerIndex: 0
+      },
+      {
+        id: 'q_m_qms_rca_4',
+        text: 'When should an RCA be performed?',
+        options: ['Only for minor complaints', 'After a significant incident or non-conformity', 'Before hiring new staff', 'Annually regardless of events'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_qms_rca_5',
+        text: 'What is a "correction" versus a "corrective action"?',
+        options: ['They are the same', 'Correction fixes the immediate problem; Corrective Action eliminates the cause', 'Correction is long-term; Corrective Action is immediate', 'Correction is for staff; Corrective Action is for machines'],
+        correctAnswerIndex: 1
+      }
+    ]
+  },
+  {
+    id: 'm_qms_risk',
+    section: 'D. Quality Management System',
+    title: 'Risks and Opportunities (QMS)',
+    description: 'Understanding risk-based thinking in the context of ISO 9001, ensuring processes are robust and opportunities for improvement are seized.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
+    duration: '8 min',
+    topics: ['Risk-Based Thinking', 'SWOT Analysis', 'Process Approach', 'Mitigation'],
+    videoUrl: 'https://www.youtube.com/watch?v=7uETqRkO_Yg', // Generic educational placeholder
+    questions: [
+      {
+        id: 'q_m_qms_risk_1',
+        text: 'What is "risk-based thinking"?',
+        options: ['Avoiding all risks at all costs', 'Proactively addressing uncertainties that affect objectives', 'Only reacting to problems after they occur', 'Buying insurance for everything'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_qms_risk_2',
+        text: 'Which of the following is considered an "Opportunity" in QMS?',
+        options: ['Equipment breakdown', 'Staff shortage', 'Adopting new technology to improve efficiency', 'Patient complaints'],
+        correctAnswerIndex: 2
+      },
+      {
+        id: 'q_m_qms_risk_3',
+        text: 'Risks should be addressed during which phase?',
+        options: ['Planning', 'Auditing', 'Discharge', 'Billing'],
+        correctAnswerIndex: 0
+      },
+      {
+        id: 'q_m_qms_risk_4',
+        text: 'How does QMS define risk?',
+        options: ['The effect of uncertainty', 'The probability of injury', 'A financial loss', 'A safety hazard'],
+        correctAnswerIndex: 0
+      },
+      {
+        id: 'q_m_qms_risk_5',
+        text: 'Once a risk is identified, what is the next logical step?',
+        options: ['Ignore it', 'Assess and plan actions to address it', 'File it away', 'Blame the department head'],
+        correctAnswerIndex: 1
+      }
+    ]
+  },
+  {
+    id: 'm_qms_car',
+    section: 'D. Quality Management System',
+    title: 'Corrective Action Requests',
+    description: 'The process of documenting, investigating, and resolving non-conformities through the formal Corrective Action Request (CAR) system.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
+    duration: '9 min',
+    topics: ['Non-conformity', 'CAR Process', 'Verification', 'Closure'],
+    videoUrl: 'https://www.youtube.com/watch?v=3y9zM2g0k70', // Generic educational placeholder
+    questions: [
+      {
+        id: 'q_m_qms_car_1',
+        text: 'What triggers a Corrective Action Request (CAR)?',
+        options: ['A job well done', 'Identification of a non-conformity', 'Routine daily tasks', 'Staff promotion'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_qms_car_2',
+        text: 'Who can initiate a CAR?',
+        options: ['Only the CEO', 'Only external auditors', 'Any employee who identifies a systemic issue', 'Patients only'],
+        correctAnswerIndex: 2
+      },
+      {
+        id: 'q_m_qms_car_3',
+        text: 'What is the final step in the CAR process?',
+        options: ['Opening the request', 'Identifying the root cause', 'Verification of effectiveness and closure', 'Brainstorming'],
+        correctAnswerIndex: 2
+      },
+      {
+        id: 'q_m_qms_car_4',
+        text: 'Why is it important to verify effectiveness?',
+        options: ['To ensure the solution actually prevented recurrence', 'To waste time', 'To increase paperwork', 'To punish the responsible party'],
+        correctAnswerIndex: 0
+      },
+      {
+        id: 'q_m_qms_car_5',
+        text: 'A "non-conformity" is best defined as:',
+        options: ['A suggestion', 'Non-fulfillment of a requirement', 'A new idea', 'A compliment'],
+        correctAnswerIndex: 1
+      }
+    ]
+  },
+
+  // SECTION E: Advanced Infection Prevention and Control
+  {
+    id: 'm_adv_ipc_vap',
+    section: 'E. Advanced Infection Prevention and Control',
+    title: 'VAP Bundle',
+    description: 'Evidence-based practices to prevent Ventilator-Associated Pneumonia, including head-of-bed elevation, oral care, and sedation management.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1516574187841-69301976e499?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
+    duration: '10 min',
+    topics: ['Ventilator-Associated Pneumonia', 'Oral Care', 'Sedation Vacation', 'Head of Bed'],
+    videoUrl: 'https://www.youtube.com/watch?v=Fj2FqKjRz1I', // Generic educational placeholder
+    questions: [
+      {
+        id: 'q_m_adv_ipc_vap_1',
+        text: 'What is the recommended head-of-bed elevation to prevent VAP?',
+        options: ['0-10 degrees', '30-45 degrees', '90 degrees', 'Flat'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_vap_2',
+        text: 'How often should oral care with chlorhexidine be performed?',
+        options: ['Weekly', 'Daily', 'Every 2-4 hours (as per policy)', 'Monthly'],
+        correctAnswerIndex: 2
+      },
+      {
+        id: 'q_m_adv_ipc_vap_3',
+        text: 'What is a "sedation vacation"?',
+        options: ['Sending the patient on a trip', 'Daily interruption of sedation to assess readiness to wean', 'Increasing sedation at night', 'Giving the staff a break'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_vap_4',
+        text: 'Why is peptic ulcer disease (PUD) prophylaxis part of the bundle?',
+        options: ['To prevent stomach cramps', 'To reduce the risk of aspiration of gastric contents', 'To improve appetite', 'To treat infection'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_vap_5',
+        text: 'Which of the following is NOT a component of the VAP bundle?',
+        options: ['Head of bed elevation', 'Daily sedation interruption', 'Routine antibiotic prophylaxis', 'DVT prophylaxis'],
+        correctAnswerIndex: 2
+      }
+    ]
+  },
+  {
+    id: 'm_adv_ipc_cauti',
+    section: 'E. Advanced Infection Prevention and Control',
+    title: 'CAUTI Bundle',
+    description: 'Protocols for preventing Catheter-Associated Urinary Tract Infections, focusing on aseptic insertion and timely removal.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=3880&auto=format&fit=crop&w=800&q=80',
+    duration: '8 min',
+    topics: ['CAUTI', 'Aseptic Insertion', 'Catheter Maintenance', 'Timely Removal'],
+    videoUrl: 'https://www.youtube.com/watch?v=5y2sQx8u4yI', // Generic educational placeholder
+    questions: [
+      {
+        id: 'q_m_adv_ipc_cauti_1',
+        text: 'What is the most effective way to prevent CAUTI?',
+        options: ['Daily antibiotics', 'Avoid unnecessary catheterization and remove ASAP', 'Using larger catheters', 'Bladder irrigation'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_cauti_2',
+        text: 'Where should the drainage bag be kept?',
+        options: ['Above the level of the bladder', 'Below the level of the bladder', 'On the patient\'s lap', 'On the floor'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_cauti_3',
+        text: 'What technique is required for catheter insertion?',
+        options: ['Clean technique', 'Aseptic (sterile) technique', 'Non-touch technique only', 'Rapid technique'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_cauti_4',
+        text: 'How often should the drainage bag be emptied?',
+        options: ['Once a week', 'When full or at regular intervals', 'Only when overflowing', 'Never'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_cauti_5',
+        text: 'Routine bladder irrigation is:',
+        options: ['Recommended for all patients', 'Not recommended unless obstruction is anticipated', 'Required daily', 'Used to treat infection'],
+        correctAnswerIndex: 1
+      }
+    ]
+  },
+  {
+    id: 'm_adv_ipc_clabsi',
+    section: 'E. Advanced Infection Prevention and Control',
+    title: 'CLABSI Bundle',
+    description: 'Best practices for Central Line-Associated Bloodstream Infection prevention, including maximal barrier precautions and site care.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1631815588090-d4bfec5b1b98?q=80&w=3774&auto=format&fit=crop&w=800&q=80',
+    duration: '10 min',
+    topics: ['CLABSI', 'Central Line', 'Maximal Barrier Precautions', 'Chlorhexidine'],
+    videoUrl: 'https://www.youtube.com/watch?v=M2T22rB3fA4', // Generic educational placeholder
+    questions: [
+      {
+        id: 'q_m_adv_ipc_clabsi_1',
+        text: 'Which site is preferred for central line insertion to reduce infection risk in adults?',
+        options: ['Femoral vein', 'Subclavian vein', 'Jugular vein', 'Popliteal vein'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_clabsi_2',
+        text: 'What does "Maximal Barrier Precautions" include?',
+        options: ['Gloves only', 'Cap, mask, sterile gown, sterile gloves, and large sterile drape', 'Mask and gloves', 'Gown and gloves'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_clabsi_3',
+        text: 'What is the recommended skin antiseptic for central line insertion?',
+        options: ['Povidone-iodine', 'Alcohol only', 'Chlorhexidine gluconate (>0.5%) with alcohol', 'Soap and water'],
+        correctAnswerIndex: 2
+      },
+      {
+        id: 'q_m_adv_ipc_clabsi_4',
+        text: 'How often should the necessity of the central line be reviewed?',
+        options: ['Weekly', 'Daily', 'Monthly', 'Never'],
+        correctAnswerIndex: 1
+      },
+      {
+        id: 'q_m_adv_ipc_clabsi_5',
+        text: 'When should the dressing be changed?',
+        options: ['Only when the line is removed', 'If damp, loosened, or soiled, or every 7 days for transparent dressings', 'Daily', 'Every 2 days'],
+        correctAnswerIndex: 1
       }
     ]
   }
