@@ -9,7 +9,10 @@ import AdminDashboard from './components/AdminDashboard';
 import { MODULES, PASSING_SCORE } from './constants';
 import { Module, UserState, ModuleProgress, AppView, UserRole, UserProfile, RegistrationData } from './types';
 import { dataService } from './services/dataService';
-import { Trophy, Activity, Star, Users, LayoutDashboard, Eye, Award, X, Download, Loader2 } from 'lucide-react';
+import { 
+  Trophy, Activity, Star, Users, LayoutDashboard, Eye, Award, X, Download, Loader2,
+  ShieldCheck, HeartPulse, FileText, Microscope, Syringe, CheckCircle2
+} from 'lucide-react';
 
 // --- SEED DATA for Demo (Initial Fallback if DB is empty, logic can be removed if strictly using DB) ---
 const INITIAL_PROGRESS_TEMPLATE: Record<string, ModuleProgress> = {};
@@ -168,6 +171,16 @@ function App() {
         setActiveTab('');
     }
   }, [sectionNames, sections, activeTab]);
+
+  // Helper for Section Icons
+  const getSectionIcon = (sectionName: string) => {
+    if (sectionName.includes('Quality Assurance')) return <ShieldCheck size={18} />;
+    if (sectionName.includes('Advanced')) return <Microscope size={18} />;
+    if (sectionName.includes('Infection Prevention')) return <Syringe size={18} />;
+    if (sectionName.includes('Patient Safety')) return <HeartPulse size={18} />;
+    if (sectionName.includes('Quality Management')) return <FileText size={18} />;
+    return <Activity size={18} />;
+  };
 
   // --- Actions ---
 
@@ -398,7 +411,7 @@ function App() {
       )}
 
       {view === AppView.DASHBOARD && (
-        <main className="flex-1 max-w-7xl mx-auto w-full p-6 space-y-8 animate-fadeIn">
+        <main className="flex-1 max-w-7xl mx-auto w-full p-6 space-y-6 animate-fadeIn">
             
             {/* Completion Banner for Employees */}
             {isAllCompleted && currentUser?.role !== 'QA Admin' && (
@@ -428,37 +441,37 @@ function App() {
             )}
 
             {/* Welcome / Progress Section */}
-            <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 flex flex-col md:flex-row items-center justify-between gap-6">
+            <section className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-2xl font-bold text-gray-900">Welcome, {currentUser?.firstName} {currentUser?.lastName}</h2>
-                  <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full font-medium border border-gray-200">
+                <div className="flex items-center gap-3 mb-1">
+                  <h2 className="text-xl font-bold text-gray-900">Welcome, {currentUser?.firstName} {currentUser?.lastName}</h2>
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full font-medium border border-gray-200">
                     {currentUser?.role}
                   </span>
                 </div>
-                <p className="text-gray-600 max-w-xl">
+                <p className="text-sm text-gray-600 max-w-xl leading-relaxed">
                   {currentUser?.role === 'QA Admin' 
-                    ? 'You are viewing the course list. Use "Preview as" to see role-specific modules.'
-                    : 'Complete the following video modules and assessments to finish your Quality Assurance onboarding. You must score at least 90% on each assessment to pass.'
+                    ? 'Use the preview tools to test role-specific content.'
+                    : 'Complete the video modules and score 90%+ on assessments to pass.'
                   }
                 </p>
               </div>
               
               {/* Hide progress stats for Admin */}
               {currentUser?.role !== 'QA Admin' && (
-                  <div className="flex items-center gap-8 bg-gray-50 px-8 py-4 rounded-lg border border-gray-100">
+                  <div className="flex items-center gap-6 bg-gray-50 px-6 py-3 rounded-lg border border-gray-100 shrink-0">
                      <div className="text-center">
-                        <div className="text-sm text-gray-500 font-medium mb-1">Modules</div>
-                        <div className="text-2xl font-bold text-gray-900 flex items-center gap-2 justify-center">
-                          <Activity className="text-osmak-green" size={20} />
+                        <div className="text-xs text-gray-500 font-medium mb-1">Modules</div>
+                        <div className="text-lg font-bold text-gray-900 flex items-center gap-1.5 justify-center">
+                          <Activity className="text-osmak-green" size={16} />
                           {completedCount}/{totalVisibleModules}
                         </div>
                      </div>
-                     <div className="w-px h-12 bg-gray-200"></div>
+                     <div className="w-px h-8 bg-gray-200"></div>
                      <div className="text-center">
-                        <div className="text-sm text-gray-500 font-medium mb-1">Total Progress</div>
-                        <div className="text-2xl font-bold text-gray-900 flex items-center gap-2 justify-center">
-                           <Trophy className={progressPercent === 100 ? "text-yellow-500" : "text-gray-300"} size={20} />
+                        <div className="text-xs text-gray-500 font-medium mb-1">Total Progress</div>
+                        <div className="text-lg font-bold text-gray-900 flex items-center gap-1.5 justify-center">
+                           <Trophy className={progressPercent === 100 ? "text-yellow-500" : "text-gray-300"} size={16} />
                            {progressPercent}%
                         </div>
                      </div>
@@ -466,31 +479,68 @@ function App() {
               )}
             </section>
 
-            {/* Tabbed Navigation - Improved with flex-wrap and better styling */}
-            <div className="mb-6">
-              <div className="flex flex-wrap gap-2">
+            {/* Compact Section Selector */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-3">
+                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Course Sections</h3>
+                 <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 font-medium">{sectionNames.length} Sections Available</span>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
                 {sectionNames.length > 0 ? sectionNames.map(sectionName => {
                   const isActive = activeTab === sectionName;
                   const modulesInSection = sections[sectionName] || [];
                   const isSectionComplete = modulesInSection.length > 0 && modulesInSection.every(m => currentUserProgress[m.id]?.isCompleted);
+                  
+                  // Parse Section Name "A. Title"
+                  const parts = sectionName.split('. ');
+                  const letter = parts.length > 1 ? parts[0] : ''; 
+                  const title = parts.length > 1 ? parts.slice(1).join('. ') : sectionName;
 
                   return (
                     <button
                       key={sectionName}
                       onClick={() => setActiveTab(sectionName)}
                       className={`
-                        flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all rounded-lg border shadow-sm
+                        flex items-center text-left p-3 rounded-lg border transition-all duration-200 h-full group
                         ${isActive 
-                          ? 'border-osmak-green bg-osmak-green text-white ring-2 ring-osmak-green ring-offset-1' 
-                          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300'}
+                          ? 'border-osmak-green bg-osmak-green/5 ring-1 ring-osmak-green shadow-sm' 
+                          : 'border-gray-200 bg-white hover:border-osmak-green/50 hover:shadow-sm'}
                       `}
                     >
-                      {sectionName}
-                      {isSectionComplete && <Star size={16} className={`ml-1 ${isActive ? 'text-yellow-300 fill-yellow-300' : 'text-yellow-500 fill-yellow-500'}`} />}
+                        <div className={`
+                          w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-colors mr-3
+                          ${isActive ? 'bg-osmak-green text-white shadow-sm' : 'bg-gray-100 text-gray-500 group-hover:bg-osmak-green/10 group-hover:text-osmak-green'}
+                        `}>
+                           {getSectionIcon(sectionName)}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                           {letter && (
+                               <div className={`text-[10px] font-bold uppercase tracking-wider leading-none mb-0.5 ${isActive ? 'text-osmak-green' : 'text-gray-400'}`}>
+                                  Section {letter}
+                               </div>
+                           )}
+                           <div className={`text-xs font-bold leading-tight truncate ${isActive ? 'text-gray-900' : 'text-gray-700'}`}>
+                              {title}
+                           </div>
+                        </div>
+
+                        {isSectionComplete ? (
+                           <div className="ml-2 bg-yellow-100 text-yellow-600 p-1 rounded-full shrink-0">
+                              <Star size={12} fill="currentColor" />
+                           </div>
+                        ) : (
+                           <div className={`ml-2 text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0 ${isActive ? 'bg-white text-osmak-green border border-osmak-green/20' : 'bg-gray-100 text-gray-500'}`}>
+                              {modulesInSection.length}
+                           </div>
+                        )}
                     </button>
                   );
                 }) : (
-                   <div className="text-gray-500 text-sm italic py-2">No modules available for this view.</div>
+                   <div className="col-span-full py-4 text-center text-sm text-gray-500 border border-dashed border-gray-200 rounded-lg bg-gray-50">
+                      No training sections available for your role.
+                   </div>
                 )}
               </div>
             </div>
