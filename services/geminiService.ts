@@ -2,7 +2,22 @@ import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { Question, Module } from '../types';
 import { FALLBACK_QUESTIONS } from '../constants';
 
-const apiKey = process.env.API_KEY;
+// Safely access API key, strictly for Vite environments to avoid "process is not defined" crashes
+const getApiKey = () => {
+  try {
+    // Check for Vite env
+    // Cast to any to fix TS error: Property 'env' does not exist on type 'ImportMeta'
+    const meta = import.meta as any;
+    if (typeof meta !== 'undefined' && meta.env && meta.env.VITE_API_KEY) {
+      return meta.env.VITE_API_KEY;
+    }
+  } catch (e) {
+    // Ignore errors during access
+  }
+  return undefined;
+};
+
+const apiKey = getApiKey();
 
 // Define the response schema for the quiz
 const quizSchema: Schema = {
