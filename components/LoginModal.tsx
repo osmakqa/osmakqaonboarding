@@ -153,14 +153,14 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
             <img 
               src="https://maxterrenal-hash.github.io/justculture/osmak-logo.png" 
               alt="OsMak Logo" 
-              className="h-16 w-16 object-contain bg-white rounded-full p-1"
+              className="h-16 w-16 object-contain"
             />
             <div className="flex flex-col items-start text-white">
               <h2 className="text-xl font-bold uppercase tracking-wide leading-tight">
                 OSPITAL NG MAKATI
               </h2>
               <p className="text-sm font-medium opacity-90 leading-tight mt-0.5 text-green-50">
-                Quality Assurance Division Onboarding
+                Quality Assurance Division Training Portal
               </p>
             </div>
           </div>
