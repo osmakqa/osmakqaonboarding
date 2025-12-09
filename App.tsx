@@ -426,7 +426,7 @@ function App() {
                        <div>
                            <h2 className="text-xl font-bold text-gray-900">Congratulations, {currentUser?.firstName}!</h2>
                            <p className="text-gray-700 mt-1">
-                               You have successfully completed all required training modules for the Quality Assurance Division Onboarding.
+                               You have successfully completed all required training modules for the Quality Assurance Division Training Portal.
                            </p>
                        </div>
                    </div>
@@ -618,7 +618,7 @@ function App() {
                   <p className="text-xl text-gray-700 max-w-2xl mx-auto leading-relaxed mb-12">
                       For successfully completing the required training modules for the
                       <br/>
-                      <span className="font-bold">Quality Assurance Division Onboarding Course</span>
+                      <span className="font-bold">Quality Assurance Division Training Portal</span>
                   </p>
 
                   <div className="flex justify-around w-full max-w-3xl mt-auto pt-12">
