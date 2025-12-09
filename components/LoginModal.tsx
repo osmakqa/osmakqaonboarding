@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { UserRole, RegistrationData, UserProfile } from '../types';
-import { LogIn, UserPlus, ArrowLeft, Check, User, Hash, ShieldAlert, Loader2, AlertTriangle, Users } from 'lucide-react';
+import { LogIn, UserPlus, ArrowLeft, Check, Hash, ShieldAlert, Loader2, AlertTriangle, Users } from 'lucide-react';
 import { ORGANIZATIONAL_STRUCTURE } from '../constants';
 
 interface LoginModalProps {
@@ -12,6 +12,7 @@ interface LoginModalProps {
 }
 
 const REGISTRATION_ROLES: UserRole[] = [
+  'QA Admin',
   'Head / Assistant Head',
   'Doctor', 
   'Nurse',
@@ -28,8 +29,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
   const [view, setView] = useState<ViewMode>('LOGIN');
   
   // Login State
-  const [loginRole, setLoginRole] = useState<string>('');
-  const [loginHospitalNumber, setLoginHospitalNumber] = useState('');
+  const [loginRole, setLoginRole] = useState<string>(''); // Replaces Last Name
+  const [loginHospitalNumber, setLoginHospitalNumber] = useState(''); // Optional
   const [loginError, setLoginError] = useState('');
   
   // Registration State
@@ -54,24 +55,46 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
         return;
     }
 
-    const hospitalIdInput = loginHospitalNumber.trim() || `beta-${loginRole.replace(/\s+/g, '-').toLowerCase()}`;
-    const selectedUserRole = loginRole as UserRole;
+    const hospitalIdInput = loginHospitalNumber.trim().toLowerCase();
 
-    // Create a Beta/Demo User Profile
+    // 1. If Hospital Number IS provided, try to find a real user
+    if (hospitalIdInput) {
+        // Special case for QA Admin bypass if entered explicitly
+        if (hospitalIdInput === '999999') {
+             const adminUser: UserProfile = {
+                firstName: 'QA', lastName: 'Admin', hospitalNumber: '999999', role: 'QA Admin',
+                middleInitial: '', birthday: '', plantillaPosition: 'Administrator',
+                division: 'Quality Assurance Division', departmentOrSection: 'Process and Performance Improvement Section',
+                progress: {}
+            };
+            onLogin('QA Admin', adminUser);
+            return;
+        }
+
+        const foundUser = users.find(u => u.hospitalNumber.toLowerCase() === hospitalIdInput);
+        if (foundUser) {
+            onLogin(foundUser.role as UserRole, foundUser);
+            return;
+        }
+        // If provided but not found, we fall through to Demo login below
+    }
+
+    // 2. Beta / Demo Login (If ID not found OR ID not provided)
+    // Create a temporary/demo profile based on the selected role
     const demoUser: UserProfile = {
         firstName: 'Beta',
         lastName: 'Tester',
-        hospitalNumber: hospitalIdInput,
-        role: selectedUserRole,
+        hospitalNumber: hospitalIdInput || `beta-${Date.now()}`,
+        role: loginRole as UserRole,
         middleInitial: '',
         birthday: '',
         plantillaPosition: 'Beta Access',
-        division: selectedUserRole === 'QA Admin' ? 'Quality Assurance Division' : 'Clinical Division',
-        departmentOrSection: selectedUserRole === 'QA Admin' ? 'Process and Performance Improvement Section' : 'Department of Internal Medicine',
+        division: 'Clinical Division',
+        departmentOrSection: 'General',
         progress: {}
     };
 
-    onLogin(selectedUserRole, demoUser);
+    onLogin(loginRole as UserRole, demoUser);
   };
 
   const availableSections = regData.division ? ORGANIZATIONAL_STRUCTURE[regData.division] || [] : [];
@@ -141,11 +164,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                   <AlertTriangle size={16} />
                </div>
                <div>
-                  <span className="font-bold block text-sm mb-0.5">Beta Feature: Simplified Access</span>
-                  <span className="opacity-90">Select a role to instantly log in for testing purposes.</span>
+                  <span className="font-bold block text-sm mb-0.5">Beta Feature: Quick Access</span>
+                  <span className="opacity-90">Select a role to enter immediately. Hospital ID is optional for testing.</span>
                </div>
             </div>
-            {/* End Beta Notice */}
 
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               
@@ -153,7 +175,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
                   <Users size={16} className="text-gray-400" />
-                  Select Role (Beta Login)
+                  Select Role
                 </label>
                 <select
                   value={loginRole}
@@ -161,26 +183,24 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                   className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-gray-50 text-gray-900"
                   required
                 >
-                    <option value="" disabled>-- Select a Role --</option>
-                    <option value="QA Admin" className="font-bold text-blue-700">QA Admin (Full Access)</option>
-                    <hr />
+                    <option value="" disabled>-- Select Your Role --</option>
                     {REGISTRATION_ROLES.map(role => (
                         <option key={role} value={role}>{role}</option>
                     ))}
                 </select>
               </div>
 
-              {/* Hospital Number / Username (Optional) */}
+              {/* Hospital Number (Optional for Beta) */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
                   <Hash size={16} className="text-gray-400" />
-                  Hospital Number (Optional)
+                  Hospital Number <span className="text-gray-400 font-normal ml-auto text-xs">(Optional)</span>
                 </label>
                 <input
                   type="text"
                   value={loginHospitalNumber}
                   onChange={(e) => setLoginHospitalNumber(e.target.value)}
-                  placeholder="Optional for Beta"
+                  placeholder="e.g. 123456"
                   className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-gray-50 text-gray-900"
                 />
               </div>
@@ -199,6 +219,28 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                 Enter Portal
               </button>
 
+              <button
+                type="button"
+                onClick={() => {
+                    const adminUser: UserProfile = {
+                        firstName: 'QA',
+                        lastName: 'Admin',
+                        hospitalNumber: '999999',
+                        role: 'QA Admin',
+                        middleInitial: '',
+                        birthday: '',
+                        plantillaPosition: 'Administrator',
+                        division: 'Quality Assurance Division',
+                        departmentOrSection: '',
+                        progress: {}
+                    };
+                    onLogin('QA Admin', adminUser);
+                }}
+                className="w-full flex justify-center items-center gap-2 py-2 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg shadow-md font-bold text-xs transition-colors mt-2"
+              >
+                <ShieldAlert size={14} />
+                Bypass Login (QA Admin)
+              </button>
             </form>
             
             <div className="mt-6 flex flex-col gap-3 text-center border-t border-gray-100 pt-4">
@@ -208,7 +250,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                   className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-osmak-green text-osmak-green rounded-lg hover:bg-green-50 font-bold text-sm transition-colors"
                >
                   <UserPlus size={18} />
-                  Register Account
+                  Register New Account
                </button>
             </div>
           </div>

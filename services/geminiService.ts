@@ -1,8 +1,10 @@
+
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { Question, Module } from '../types';
 import { FALLBACK_QUESTIONS } from '../constants';
 
-// Safely access API key, strictly for Vite environments to avoid "process is not defined" crashes
+// Safely access API key, handling both Vite (import.meta.env) and Node/Process environments
+// This prevents "ReferenceError: process is not defined" crashes in browsers
 const getApiKey = () => {
   try {
     // Check for Vite env
@@ -10,6 +12,10 @@ const getApiKey = () => {
     const meta = import.meta as any;
     if (typeof meta !== 'undefined' && meta.env && meta.env.VITE_API_KEY) {
       return meta.env.VITE_API_KEY;
+    }
+    // Check for process.env (Node/System)
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      return process.env.API_KEY;
     }
   } catch (e) {
     // Ignore errors during access
