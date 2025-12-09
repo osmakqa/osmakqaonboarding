@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { UserRole, RegistrationData, UserProfile } from '../types';
-import { LogIn, UserPlus, ArrowLeft, Check, Hash, ShieldAlert, Loader2, AlertTriangle, Users } from 'lucide-react';
+import { LogIn, UserPlus, ArrowLeft, Check, Hash, ShieldAlert, Loader2, AlertTriangle, Users, User } from 'lucide-react';
 import { ORGANIZATIONAL_STRUCTURE } from '../constants';
 
 interface LoginModalProps {
@@ -29,8 +29,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
   const [view, setView] = useState<ViewMode>('LOGIN');
   
   // Login State
-  const [loginRole, setLoginRole] = useState<string>(''); // Replaces Last Name
-  const [loginHospitalNumber, setLoginHospitalNumber] = useState(''); // Optional
+  const [loginLastName, setLoginLastName] = useState('');
+  const [loginRole, setLoginRole] = useState<string>(''); 
+  const [loginHospitalNumber, setLoginHospitalNumber] = useState('');
   const [loginError, setLoginError] = useState('');
   
   // Registration State
@@ -50,51 +51,58 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
     e.preventDefault();
     setLoginError('');
 
-    if (!loginRole) {
-        setLoginError('Please select a role to proceed.');
+    const lastNameInput = loginLastName.trim().toLowerCase();
+    const hospitalIdInput = loginHospitalNumber.trim().toLowerCase();
+
+    // 1. QA Admin Bypass (Hardcoded)
+    if (hospitalIdInput === '999999') {
+         const adminUser: UserProfile = {
+            firstName: 'QA', lastName: 'Admin', hospitalNumber: '999999', role: 'QA Admin',
+            middleInitial: '', birthday: '', plantillaPosition: 'Administrator',
+            division: 'Quality Assurance Division', departmentOrSection: 'Process and Performance Improvement Section',
+            progress: {}
+        };
+        onLogin('QA Admin', adminUser);
         return;
     }
 
-    const hospitalIdInput = loginHospitalNumber.trim().toLowerCase();
+    // 2. Real User Login (Priority)
+    // Check if Last Name AND Hospital Number match a real user
+    if (lastNameInput && hospitalIdInput) {
+        const foundUser = users.find(u => 
+            u.hospitalNumber.toLowerCase() === hospitalIdInput && 
+            u.lastName.toLowerCase() === lastNameInput
+        );
 
-    // 1. If Hospital Number IS provided, try to find a real user
-    if (hospitalIdInput) {
-        // Special case for QA Admin bypass if entered explicitly
-        if (hospitalIdInput === '999999') {
-             const adminUser: UserProfile = {
-                firstName: 'QA', lastName: 'Admin', hospitalNumber: '999999', role: 'QA Admin',
-                middleInitial: '', birthday: '', plantillaPosition: 'Administrator',
-                division: 'Quality Assurance Division', departmentOrSection: 'Process and Performance Improvement Section',
-                progress: {}
-            };
-            onLogin('QA Admin', adminUser);
-            return;
-        }
-
-        const foundUser = users.find(u => u.hospitalNumber.toLowerCase() === hospitalIdInput);
         if (foundUser) {
             onLogin(foundUser.role as UserRole, foundUser);
             return;
         }
-        // If provided but not found, we fall through to Demo login below
     }
 
-    // 2. Beta / Demo Login (If ID not found OR ID not provided)
-    // Create a temporary/demo profile based on the selected role
-    const demoUser: UserProfile = {
-        firstName: 'Beta',
-        lastName: 'Tester',
-        hospitalNumber: hospitalIdInput || `beta-${Date.now()}`,
-        role: loginRole as UserRole,
-        middleInitial: '',
-        birthday: '',
-        plantillaPosition: 'Beta Access',
-        division: 'Clinical Division',
-        departmentOrSection: 'General',
-        progress: {}
-    };
+    // 3. Beta / Demo Access
+    // If no real user found, check if a Role was manually selected for testing
+    if (loginRole) {
+        // Create a temporary/demo profile based on the selected role
+        const demoUser: UserProfile = {
+            firstName: 'Beta',
+            lastName: loginLastName || 'Tester',
+            hospitalNumber: hospitalIdInput || `beta-${Date.now()}`,
+            role: loginRole as UserRole,
+            middleInitial: '',
+            birthday: '',
+            plantillaPosition: 'Beta Access',
+            division: 'Clinical Division',
+            departmentOrSection: 'General',
+            progress: {}
+        };
+        
+        onLogin(loginRole as UserRole, demoUser);
+        return;
+    }
 
-    onLogin(loginRole as UserRole, demoUser);
+    // 4. Failure
+    setLoginError('User not found. Please check your Last Name and Hospital ID, or select a Role for Beta access.');
   };
 
   const availableSections = regData.division ? ORGANIZATIONAL_STRUCTURE[regData.division] || [] : [];
@@ -164,37 +172,33 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                   <AlertTriangle size={16} />
                </div>
                <div>
-                  <span className="font-bold block text-sm mb-0.5">Beta Feature: Quick Access</span>
-                  <span className="opacity-90">Select a role to enter immediately. Hospital ID is optional for testing.</span>
+                  <span className="font-bold block text-sm mb-0.5">Beta Feature</span>
+                  <span className="opacity-90">Enter your credentials to login, <strong>OR</strong> just select a Role below to test the app as a guest.</span>
                </div>
             </div>
 
-            <form onSubmit={handleLoginSubmit} className="space-y-5">
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
               
-              {/* Role Selection (Replaces Last Name) */}
+              {/* Last Name Input */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
-                  <Users size={16} className="text-gray-400" />
-                  Select Role
+                  <User size={16} className="text-gray-400" />
+                  Last Name
                 </label>
-                <select
-                  value={loginRole}
-                  onChange={(e) => setLoginRole(e.target.value)}
+                <input
+                  type="text"
+                  value={loginLastName}
+                  onChange={(e) => setLoginLastName(e.target.value)}
+                  placeholder="Enter Last Name"
                   className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-gray-50 text-gray-900"
-                  required
-                >
-                    <option value="" disabled>-- Select Your Role --</option>
-                    {REGISTRATION_ROLES.map(role => (
-                        <option key={role} value={role}>{role}</option>
-                    ))}
-                </select>
+                />
               </div>
 
-              {/* Hospital Number (Optional for Beta) */}
+              {/* Hospital Number Input */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
                   <Hash size={16} className="text-gray-400" />
-                  Hospital Number <span className="text-gray-400 font-normal ml-auto text-xs">(Optional)</span>
+                  Hospital Number
                 </label>
                 <input
                   type="text"
@@ -205,8 +209,32 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                 />
               </div>
 
+              <div className="flex items-center gap-3 py-1">
+                 <div className="h-px bg-gray-200 flex-1"></div>
+                 <span className="text-xs text-gray-400 font-medium uppercase">OR Select Beta Role</span>
+                 <div className="h-px bg-gray-200 flex-1"></div>
+              </div>
+
+              {/* Role Selection (Beta Access) */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
+                  <Users size={16} className="text-gray-400" />
+                  Beta Access Role
+                </label>
+                <select
+                  value={loginRole}
+                  onChange={(e) => setLoginRole(e.target.value)}
+                  className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-gray-50 text-gray-900"
+                >
+                    <option value="">-- Select Role (Guest Access) --</option>
+                    {REGISTRATION_ROLES.map(role => (
+                        <option key={role} value={role}>{role}</option>
+                    ))}
+                </select>
+              </div>
+
               {loginError && (
-                <div className="p-3 bg-red-50 text-red-600 text-xs rounded border border-red-200">
+                <div className="p-3 bg-red-50 text-red-600 text-xs rounded border border-red-200 font-medium">
                   {loginError}
                 </div>
               )}
