@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { UserRole, RegistrationData, UserProfile } from '../types';
-import { LogIn, UserPlus, ArrowLeft, Check, User, Hash, ShieldAlert, Loader2, AlertTriangle } from 'lucide-react';
+import { LogIn, UserPlus, ArrowLeft, Check, User, Hash, ShieldAlert, Loader2, AlertTriangle, Users } from 'lucide-react';
 import { ORGANIZATIONAL_STRUCTURE } from '../constants';
 
 interface LoginModalProps {
@@ -28,7 +28,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
   const [view, setView] = useState<ViewMode>('LOGIN');
   
   // Login State
-  const [loginLastName, setLoginLastName] = useState('');
+  const [loginRole, setLoginRole] = useState<string>('');
   const [loginHospitalNumber, setLoginHospitalNumber] = useState('');
   const [loginError, setLoginError] = useState('');
   
@@ -49,75 +49,29 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
     e.preventDefault();
     setLoginError('');
 
-    const lastNameInput = loginLastName.trim().toLowerCase();
-    const hospitalIdInput = loginHospitalNumber.trim().toLowerCase();
-
-    // 1. Check for QA Admin specific bypass/hardcode
-    if (hospitalIdInput === '999999') {
-        const adminUser: UserProfile = {
-            firstName: 'QA',
-            lastName: 'Admin',
-            hospitalNumber: '999999',
-            role: 'QA Admin',
-            middleInitial: '',
-            birthday: '',
-            plantillaPosition: 'Administrator',
-            division: 'Quality Assurance Division',
-            departmentOrSection: 'Process and Performance Improvement Section',
-            progress: {}
-        };
-        onLogin('QA Admin', adminUser);
+    if (!loginRole) {
+        setLoginError('Please select a role to proceed.');
         return;
     }
 
-    // 2. Validate against registered users
-    const foundUser = users.find(u => 
-        u.hospitalNumber.toLowerCase() === hospitalIdInput && 
-        u.lastName.toLowerCase() === lastNameInput
-    );
+    const hospitalIdInput = loginHospitalNumber.trim() || `beta-${loginRole.replace(/\s+/g, '-').toLowerCase()}`;
+    const selectedUserRole = loginRole as UserRole;
 
-    if (foundUser && foundUser.role) {
-        onLogin(foundUser.role as UserRole, foundUser);
-        return;
-    }
+    // Create a Beta/Demo User Profile
+    const demoUser: UserProfile = {
+        firstName: 'Beta',
+        lastName: 'Tester',
+        hospitalNumber: hospitalIdInput,
+        role: selectedUserRole,
+        middleInitial: '',
+        birthday: '',
+        plantillaPosition: 'Beta Access',
+        division: selectedUserRole === 'QA Admin' ? 'Quality Assurance Division' : 'Clinical Division',
+        departmentOrSection: selectedUserRole === 'QA Admin' ? 'Process and Performance Improvement Section' : 'Department of Internal Medicine',
+        progress: {}
+    };
 
-    // 3. Fallback for demo accounts if not in the users list (backward compatibility)
-    // We treat the "username" from the prompt as the Hospital Number, and require "Demo" as last name
-    // OR just match the ID if it matches the specific keywords
-    const demoRoles = ['head', 'doctor', 'nurse', 'specialized nurse', 'other clinical', 'medical intern', 'non-clinical', 'others'];
-    
-    // Check if the hospital ID input loosely matches a role for demo purposes
-    const isDemoRole = demoRoles.some(r => hospitalIdInput.includes(r) || hospitalIdInput === 'head');
-
-    if (isDemoRole) {
-         // Create a temporary profile for the demo user
-         let roleName: UserRole = 'Others';
-         
-         if (hospitalIdInput === 'head') roleName = 'Head / Assistant Head';
-         else if (hospitalIdInput === 'doctor') roleName = 'Doctor';
-         else if (hospitalIdInput === 'nurse') roleName = 'Nurse';
-         else if (hospitalIdInput === 'specialized nurse') roleName = 'Nurse (High-risk Area)';
-         else if (hospitalIdInput === 'other clinical') roleName = 'Other Clinical';
-         else if (hospitalIdInput === 'medical intern') roleName = 'Medical Intern';
-         else if (hospitalIdInput === 'non-clinical') roleName = 'Non-clinical';
-
-         const demoUser: UserProfile = {
-            firstName: 'Demo',
-            lastName: loginLastName || 'User',
-            hospitalNumber: hospitalIdInput,
-            role: roleName,
-            middleInitial: '',
-            birthday: '',
-            plantillaPosition: 'Demo Account',
-            division: 'Clinical Division',
-            departmentOrSection: 'Department of Internal Medicine',
-            progress: {}
-         };
-         onLogin(roleName, demoUser);
-         return;
-    }
-
-    setLoginError('Invalid credentials. Please check Last Name and Hospital Number.');
+    onLogin(selectedUserRole, demoUser);
   };
 
   const availableSections = regData.division ? ORGANIZATIONAL_STRUCTURE[regData.division] || [] : [];
@@ -181,51 +135,54 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
           </div>
           
           <div className="p-8">
-            {/* Beta / Testing Notice - Remove this block when production ready */}
+            {/* Beta / Testing Notice */}
             <div className="mb-6 p-3 bg-orange-50 border border-orange-200 text-orange-800 text-xs rounded-lg flex items-start gap-3">
                <div className="p-1.5 bg-orange-100 text-orange-600 rounded-full shrink-0">
                   <AlertTriangle size={16} />
                </div>
                <div>
-                  <span className="font-bold block text-sm mb-0.5">Beta Feature: Testing in Progress</span>
-                  <span className="opacity-90">The system is currently under testing. Data may be periodically reset.</span>
+                  <span className="font-bold block text-sm mb-0.5">Beta Feature: Simplified Access</span>
+                  <span className="opacity-90">Select a role to instantly log in for testing purposes.</span>
                </div>
             </div>
             {/* End Beta Notice */}
 
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               
-              {/* Last Name */}
+              {/* Role Selection (Replaces Last Name) */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
-                  <User size={16} className="text-gray-400" />
-                  Last Name
+                  <Users size={16} className="text-gray-400" />
+                  Select Role (Beta Login)
                 </label>
-                <input
-                  type="text"
-                  value={loginLastName}
-                  onChange={(e) => setLoginLastName(e.target.value)}
-                  placeholder="Enter Last Name"
+                <select
+                  value={loginRole}
+                  onChange={(e) => setLoginRole(e.target.value)}
                   className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-gray-50 text-gray-900"
                   required
-                />
+                >
+                    <option value="" disabled>-- Select a Role --</option>
+                    <option value="QA Admin" className="font-bold text-blue-700">QA Admin (Full Access)</option>
+                    <hr />
+                    {REGISTRATION_ROLES.map(role => (
+                        <option key={role} value={role}>{role}</option>
+                    ))}
+                </select>
               </div>
 
-              {/* Hospital Number / Username */}
+              {/* Hospital Number / Username (Optional) */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
                   <Hash size={16} className="text-gray-400" />
-                  Hospital Number
+                  Hospital Number (Optional)
                 </label>
                 <input
                   type="text"
                   value={loginHospitalNumber}
                   onChange={(e) => setLoginHospitalNumber(e.target.value)}
-                  placeholder="e.g. 123456"
+                  placeholder="Optional for Beta"
                   className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-gray-50 text-gray-900"
-                  required
                 />
-                <p className="text-xs text-gray-500 mt-1 ml-1">This acts as your password.</p>
               </div>
 
               {loginError && (
@@ -239,31 +196,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                 className="w-full flex justify-center items-center gap-2 py-3 px-4 bg-osmak-green hover:bg-osmak-green-dark text-white rounded-lg shadow-md font-bold transition-all transform active:scale-95"
               >
                 <LogIn size={18} />
-                Sign In
+                Enter Portal
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                    const adminUser: UserProfile = {
-                        firstName: 'QA',
-                        lastName: 'Admin',
-                        hospitalNumber: '999999',
-                        role: 'QA Admin',
-                        middleInitial: '',
-                        birthday: '',
-                        plantillaPosition: 'Administrator',
-                        division: 'Quality Assurance Division',
-                        departmentOrSection: '',
-                        progress: {}
-                    };
-                    onLogin('QA Admin', adminUser);
-                }}
-                className="w-full flex justify-center items-center gap-2 py-2 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg shadow-md font-bold text-xs transition-colors mt-2"
-              >
-                <ShieldAlert size={14} />
-                Bypass Login (QA Admin)
-              </button>
             </form>
             
             <div className="mt-6 flex flex-col gap-3 text-center border-t border-gray-100 pt-4">

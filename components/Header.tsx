@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ onLogoClick, userRole, onLogout }) => {
             OSPITAL NG MAKATI
           </h1>
           <span className="text-[0.8rem] opacity-90 font-light">
-            Quality Assurance Division OnBoarding Portal
+            Quality Assurance Division Training Portal
           </span>
         </div>
       </div>
