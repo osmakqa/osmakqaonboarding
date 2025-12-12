@@ -31,10 +31,9 @@ export type UserRole =
   | 'Doctor' 
   | 'Nurse' 
   | 'Nurse (High-risk Area)' // Renamed from Specialized Nurse
-  | 'Other Clinical'
+  | 'Other Clinical (Med Tech, Rad Tech, etc)' // Renamed from Other Clinical
   | 'Non-clinical' 
-  | 'Medical Intern' 
-  | 'Others';
+  | 'Medical Intern'; // Removed 'Others'
 
 export interface UserState {
   progress: Record<string, ModuleProgress>;

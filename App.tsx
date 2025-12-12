@@ -90,52 +90,41 @@ function App() {
       // Data privacy module is for everyone
       if (m.id === 'm_qa_dataprivacy') return true;
 
-      // 1. Doctors, Nurse, Nurse (High-risk Area)
-      if (['Doctor', 'Nurse', 'Nurse (High-risk Area)'].includes(effectiveRole as string)) {
-        return m.id !== 'm_ps_1';
+      // 1. Doctors, Nurse, Nurse (High-risk Area), Other Clinical (Med Tech, Rad Tech, etc)
+      if (['Doctor', 'Nurse', 'Nurse (High-risk Area)', 'Other Clinical (Med Tech, Rad Tech, etc)'].includes(effectiveRole as string)) {
+        // Remove Section D and E for these roles
+        if (m.section === 'D. Quality Management System' || m.section === 'E. Advanced Infection Prevention and Control') {
+          return false;
+        }
+        // General IPC modules: Hand Hygiene, Standard & Isolation, PPE, Waste Management
+        if (effectiveRole === 'Other Clinical (Med Tech, Rad Tech, etc)' && ['m1', 'm2', 'm_ipc_ppe', 'm_ipc_waste'].includes(m.id)) {
+            return true;
+        }
+        // Patient Safety modules: IPSG, Error Prone Abbrev
+        if (effectiveRole === 'Other Clinical (Med Tech, Rad Tech, etc)' && ['m_ps_2', 'm_ps_error_abbrev'].includes(m.id)) {
+            return true;
+        }
+        return m.id !== 'm_ps_1'; // All doctors/nurses/other clinical see all except Risk & Opp (QMS) and sections D/E
       }
       
-      // 2. Non-Clinical, Others
-      if (['Non-clinical', 'Others'].includes(effectiveRole as string)) {
-        if (m.id === 'm_qa_1' || m.id === 'm1') return true;
+      // 2. Non-Clinical
+      if (effectiveRole === 'Non-clinical') {
+        if (m.id === 'm_qa_1' || m.id === 'm1') return true; // Patient Rights, Hand Hygiene
         return false;
       }
       
       // 3. Medical Intern
       if (effectiveRole === 'Medical Intern') {
+        // Patient Rights, IPC (all of B), QMS (all of D), Adv IPC (all of E), IPSG, Pedia Fall, Adult Fall, Error Prone Abbrev, Waste Management
         if (m.id === 'm_qa_1') return true;
         if (m.section === 'B. Infection Prevention and Control') return true;
-        if (m.section === 'D. Quality Management System') return true; // Add QMS
-        if (m.section === 'E. Advanced Infection Prevention and Control') return true; // Add Adv IPC
+        if (m.section === 'D. Quality Management System') return true; 
+        if (m.section === 'E. Advanced Infection Prevention and Control') return true; 
         if (m.id === 'm_ps_2') return true;
         if (m.id === 'm_ps_pedia_fall') return true;
         if (m.id === 'm_ps_adult_fall') return true;
         if (m.id === 'm_ps_error_abbrev') return true;
-        if (m.id === 'm_ipc_waste') return true;
-        return false;
-      }
-
-      // 4. Other Clinical
-      if (effectiveRole === 'Other Clinical') {
-        // Display all Quality Assurance modules
-        if (m.section === 'A. Quality Assurance') return true;
-        
-        // Display all QMS modules
-        if (m.section === 'D. Quality Management System') return true;
-        
-        // Display hand hygiene (m1), standard and isolation precautions (m2), PPE (m_ipc_ppe), waste management (m_ipc_waste)
-        if (['m1', 'm2', 'm_ipc_ppe', 'm_ipc_waste'].includes(m.id)) return true;
-
-        // Display Advanced IPC Modules if specific ones are needed, or all of them. 
-        // Assuming Other Clinical might need advanced IPC too:
-        if (m.section === 'E. Advanced Infection Prevention and Control') return true;
-        
-        // Display IPSG (m_ps_2)
-        if (m.id === 'm_ps_2') return true;
-
-        // Display Error Prone Abbrev
-        if (m.id === 'm_ps_error_abbrev') return true;
-        
+        if (m.id === 'm_ipc_waste') return true; // Explicitly included if not covered by section B
         return false;
       }
 
@@ -382,10 +371,10 @@ function App() {
                           <option value="Doctor">Doctor</option>
                           <option value="Nurse">Nurse</option>
                           <option value="Nurse (High-risk Area)">Nurse (High-risk Area)</option>
-                          <option value="Other Clinical">Other Clinical</option>
+                          <option value="Other Clinical (Med Tech, Rad Tech, etc)">Other Clinical (Med Tech, Rad Tech, etc)</option>
                           <option value="Medical Intern">Medical Intern</option>
                           <option value="Non-clinical">Non-clinical</option>
-                          <option value="Others">Others</option>
+                          {/* Removed 'Others' */}
                       </select>
                   </div>
               )}

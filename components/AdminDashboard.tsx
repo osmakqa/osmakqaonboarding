@@ -19,10 +19,10 @@ const REGISTRATION_ROLES: UserRole[] = [
     'Doctor',
     'Nurse',
     'Nurse (High-risk Area)', // Renamed from Specialized Nurse
-    'Other Clinical',
+    'Other Clinical (Med Tech, Rad Tech, etc)', // Renamed from Other Clinical
     'Medical Intern',
     'Non-clinical',
-    'Others'
+    // Removed 'Others'
   ];
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, onUpdateUser, onDeleteUser, isLoading = false }) => {

@@ -76,7 +76,7 @@ export const MODULES: Module[] = [
   // SECTION A
   {
     id: 'm_qa_1',
-    section: 'A. Quality Assurance',
+    section: "A. Quality Assurance",
     title: "Patient's Rights and Obligations",
     description: "Understanding the fundamental rights of patients and their corresponding responsibilities within the healthcare facility to ensure mutual respect and quality care.",
     thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1682089159103-d09b46d1cce8?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
@@ -1710,48 +1710,7 @@ export const MODULES: Module[] = [
       }
     ]
   },
-  {
-    id: 'm_qms_risk',
-    section: 'D. Quality Management System',
-    title: 'Risks and Opportunities (QMS)',
-    description: 'Understanding risk-based thinking in the context of ISO 9001, ensuring processes are robust and opportunities for improvement are seized.',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
-    duration: '8 min',
-    topics: ['Risk-Based Thinking', 'SWOT Analysis', 'Process Approach', 'Mitigation'],
-    videoUrl: 'https://www.youtube.com/watch?v=7uETqRkO_Yg', // Generic educational placeholder
-    questions: [
-      {
-        id: 'q_m_qms_risk_1',
-        text: 'What is "risk-based thinking"?',
-        options: ['Avoiding all risks at all costs', 'Proactively addressing uncertainties that affect objectives', 'Only reacting to problems after they occur', 'Buying insurance for everything'],
-        correctAnswerIndex: 1
-      },
-      {
-        id: 'q_m_qms_risk_2',
-        text: 'Which of the following is considered an "Opportunity" in QMS?',
-        options: ['Equipment breakdown', 'Staff shortage', 'Adopting new technology to improve efficiency', 'Patient complaints'],
-        correctAnswerIndex: 2
-      },
-      {
-        id: 'q_m_qms_risk_3',
-        text: 'Risks should be addressed during which phase?',
-        options: ['Planning', 'Auditing', 'Discharge', 'Billing'],
-        correctAnswerIndex: 0
-      },
-      {
-        id: 'q_m_qms_risk_4',
-        text: 'How does QMS define risk?',
-        options: ['The effect of uncertainty', 'The probability of injury', 'A financial loss', 'A safety hazard'],
-        correctAnswerIndex: 0
-      },
-      {
-        id: 'q_m_qms_risk_5',
-        text: 'Once a risk is identified, what is the next logical step?',
-        options: ['Ignore it', 'Assess and plan actions to address it', 'File it away', 'Blame the department head'],
-        correctAnswerIndex: 1
-      }
-    ]
-  },
+  // Removed m_qms_risk (Risks and Opportunities (QMS))
   {
     id: 'm_qms_car',
     section: 'D. Quality Management System',

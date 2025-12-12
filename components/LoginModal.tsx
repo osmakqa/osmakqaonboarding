@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { UserRole, RegistrationData, UserProfile } from '../types';
 import { LogIn, UserPlus, ArrowLeft, Check, Hash, ShieldAlert, Loader2, AlertTriangle, Users, User } from 'lucide-react';
@@ -17,10 +18,10 @@ const REGISTRATION_ROLES: UserRole[] = [
   'Doctor', 
   'Nurse',
   'Nurse (High-risk Area)', // Renamed from Specialized Nurse
-  'Other Clinical',
+  'Other Clinical (Med Tech, Rad Tech, etc)', // Renamed from Other Clinical
   'Medical Intern',
   'Non-clinical',
-  'Others'
+  // Removed 'Others'
 ];
 
 type ViewMode = 'LOGIN' | 'REGISTER';
