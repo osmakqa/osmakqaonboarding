@@ -14,7 +14,7 @@ interface AdminDashboardProps {
 }
 
 const REGISTRATION_ROLES: UserRole[] = [
-    'QA Admin',
+    // 'QA Admin', // Removed as per request
     'Head / Assistant Head',
     'Doctor',
     'Nurse',
