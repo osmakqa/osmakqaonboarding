@@ -1,3 +1,4 @@
+
 import { db } from './firebaseClient';
 import { 
   collection, 
@@ -8,7 +9,7 @@ import {
   deleteDoc, 
   getDoc 
 } from 'firebase/firestore';
-import { UserProfile, RegistrationData, ModuleProgress } from '../types';
+import { UserProfile, RegistrationData, ModuleProgress, Module } from '../types';
 
 // Fallback data for offline mode or network errors
 const FALLBACK_USERS: UserProfile[] = [
@@ -22,18 +23,6 @@ const FALLBACK_USERS: UserProfile[] = [
     role: 'QA Admin',
     division: 'Quality Assurance Division',
     departmentOrSection: 'Process and Performance Improvement Section',
-    progress: {}
-  },
-  {
-    firstName: 'Juan',
-    lastName: 'Dela Cruz',
-    middleInitial: 'A',
-    birthday: '1990-01-01',
-    hospitalNumber: '123456',
-    plantillaPosition: 'Nurse I',
-    role: 'Nurse',
-    division: 'Nursing Division',
-    departmentOrSection: 'General Ward',
     progress: {}
   }
 ];
@@ -49,14 +38,9 @@ export const dataService = {
       querySnapshot.forEach((doc) => {
         users.push(doc.data() as UserProfile);
       });
-      // If no users exist yet in DB, return fallbacks
       return users.length > 0 ? users : FALLBACK_USERS;
     } catch (e: any) {
-      if (e?.code === 'permission-denied') {
-        console.error("Firebase Permission Denied: Ensure Firestore Rules allow read access.");
-      } else {
-        console.error(`Firebase Error: ${e?.message || 'Unknown error'}`);
-      }
+      console.error(`Firebase User Fetch Error: ${e?.message || 'Unknown error'}`);
       return FALLBACK_USERS;
     }
   },
@@ -94,7 +78,7 @@ export const dataService = {
       return updatedDoc.data() as UserProfile;
     } catch (e: any) {
       console.error(`Update failed: ${e?.message || 'Network/Auth error'}`);
-      return { ...data, progress: {} } as UserProfile;
+      return null;
     }
   },
 
@@ -128,6 +112,44 @@ export const dataService = {
       return true;
     } catch (e: any) {
       console.error(`Progress update failed: ${e?.message || 'Network/Auth error'}`);
+      return false;
+    }
+  },
+
+  /**
+   * MODULE PERSISTENCE (Hybrid)
+   * This allows saving hardcoded modules into the database.
+   */
+  async fetchModules(): Promise<Module[]> {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'modules'));
+      const modules: Module[] = [];
+      querySnapshot.forEach((doc) => {
+        modules.push(doc.data() as Module);
+      });
+      return modules;
+    } catch (e: any) {
+      console.error(`Firebase Module Fetch Error: ${e?.message}`);
+      return [];
+    }
+  },
+
+  async saveModule(module: Module): Promise<boolean> {
+    try {
+      const moduleRef = doc(db, 'modules', module.id);
+      await setDoc(moduleRef, module);
+      return true;
+    } catch (e: any) {
+      console.error(`Save module failed: ${e?.message}`);
+      return false;
+    }
+  },
+
+  async deleteModule(moduleId: string): Promise<boolean> {
+    try {
+      await deleteDoc(doc(db, 'modules', moduleId));
+      return true;
+    } catch (e) {
       return false;
     }
   }
