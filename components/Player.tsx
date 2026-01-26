@@ -26,12 +26,12 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
   
   const playerRef = useRef<any>(null);
 
-  // Robust URL Transformation
+  // URL Transformation Logic
   const getSafeUrl = (url: string) => {
     if (!url) return '';
     let processedUrl = url.trim();
 
-    // 1. Google Drive Optimization
+    // Force Google Drive into /preview mode for embedded streaming
     if (processedUrl.includes('drive.google.com')) {
       if (processedUrl.includes('/view')) {
         processedUrl = processedUrl.replace(/\/view.*$/, '/preview');
@@ -40,22 +40,12 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
       }
     }
 
-    // 2. YouTube Privacy/Origin Fixes
-    // ReactPlayer handles standard YT links well, but we can force certain behaviors
-    if (processedUrl.includes('youtube.com') || processedUrl.includes('youtu.be')) {
-        // Ensure it's the embed format if it's a raw link
-        if (!processedUrl.includes('youtube-nocookie.com')) {
-            // Note: ReactPlayer handles the conversion to the API call, 
-            // but we ensure the configuration below passes the right parameters.
-        }
-    }
-
     return processedUrl;
   };
 
   const safeVideoUrl = getSafeUrl(module.videoUrl || '');
 
-  // Simulation fallback for modules without video
+  // Auto-progression for non-video modules
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (!module.videoUrl && isPlaying && videoProgress < 1) {
@@ -66,7 +56,7 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
             setIsVideoFinished(true);
             return 1;
           }
-          return prev + 0.005; 
+          return prev + 0.01; // Faster simulation for debug
         });
       }, 100);
     }
@@ -78,7 +68,6 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
     const fetchQuiz = async () => {
       setLoadingQuiz(true);
       setError(null);
-      setQuizQuestions([]);
       setQuizReady(false);
       
       if (module.questions && module.questions.length > 0) {
@@ -106,11 +95,9 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
   }, [module]);
 
   const handleVideoError = (e: any) => {
-    console.error("Video Error Details:", e);
+    console.error("Playback Error:", e);
     setVideoError(true);
     setIsVideoLoading(false);
-    // Allow progression if video fails to ensure nobody is "stuck"
-    setTimeout(() => setIsVideoFinished(true), 1500);
   };
 
   if (showQuiz) {
@@ -137,64 +124,62 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
     );
   }
 
-  // Casting ReactPlayer to any to bypass the type error where it's misidentified as an HTML video element
+  // Type-safe player component
   const PlayerComponent = ReactPlayer as any;
 
   return (
     <div className="fixed inset-0 bg-black z-[200] flex flex-col text-white animate-fadeIn">
-      {/* Header Controls */}
-      <div className="flex items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent absolute top-0 w-full z-[210]">
+      {/* Top Navigation Overlay */}
+      <div className="flex items-center justify-between p-6 bg-gradient-to-b from-black/90 to-transparent absolute top-0 w-full z-[210]">
         <button 
           onClick={onExit}
           className="flex items-center gap-2 hover:bg-white/20 px-4 py-2 rounded-lg transition-all bg-black/40 backdrop-blur-sm border border-white/10"
         >
           <ArrowLeft size={20} />
-          <span className="font-bold text-sm">Return to Dashboard</span>
+          <span className="font-bold text-sm">Dashboard</span>
         </button>
         <div className="text-right">
-            <h2 className="text-osmak-green font-bold text-xs uppercase tracking-[0.2em] mb-1">Quality Assurance Training</h2>
-            <p className="text-sm font-medium opacity-80">{module.title}</p>
+            <h2 className="text-osmak-green font-bold text-xs uppercase tracking-[0.2em] mb-1">Module View</h2>
+            <p className="text-sm font-medium opacity-80 truncate max-w-[200px] md:max-w-md">{module.title}</p>
         </div>
       </div>
 
-      {/* Main Viewport */}
+      {/* Primary Video Container */}
       <div className="flex-1 flex flex-col items-center justify-center bg-black relative">
         {module.videoUrl ? (
-          <div className="w-full h-full pt-20 pb-28 flex items-center justify-center">
-             <div className="relative w-full h-full max-w-5xl aspect-video bg-gray-900 shadow-2xl overflow-hidden rounded-xl border border-white/5">
+          <div className="w-full h-full flex items-center justify-center p-4 pt-24 pb-32">
+             <div className="relative w-full h-full max-w-5xl aspect-video bg-gray-950 shadow-2xl overflow-hidden rounded-xl border border-white/5">
                  
-                 {/* Video Loading Indicator */}
+                 {/* Subtle Loading State */}
                  {isVideoLoading && !videoError && (
-                     <div className="absolute inset-0 z-20 bg-gray-900 flex flex-col items-center justify-center gap-4">
+                     <div className="absolute inset-0 z-20 bg-gray-950 flex flex-col items-center justify-center gap-4 animate-pulse">
                         <Loader2 size={48} className="animate-spin text-osmak-green" />
-                        <p className="text-sm font-bold opacity-60">Initializing Stream...</p>
+                        <p className="text-sm font-bold opacity-40">Connecting to Stream...</p>
                      </div>
                  )}
 
-                 {/* Error State Handler */}
+                 {/* Connectivity Error State */}
                  {videoError ? (
-                    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center p-12 text-center bg-gray-950">
-                        <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mb-6 border border-red-500/30">
-                            <AlertCircle size={40} className="text-red-500" />
-                        </div>
-                        <h3 className="text-2xl font-bold mb-3">Playback Connection Error</h3>
-                        <p className="text-gray-400 text-sm max-w-md mb-8 leading-relaxed">
-                            This video content may be restricted by your network firewall or the platform's security policy.
+                    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center p-8 text-center bg-gray-950">
+                        <AlertCircle size={48} className="text-red-500 mb-4" />
+                        <h3 className="text-xl font-bold mb-2">Streaming Interrupted</h3>
+                        <p className="text-gray-400 text-sm max-w-sm mb-6">
+                            Unable to load content. This usually happens due to hospital firewall restrictions or invalid links.
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex gap-3">
                             <a 
                                 href={module.videoUrl} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="bg-white text-black px-8 py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-all shadow-xl"
+                                className="bg-white text-black px-6 py-2 rounded-lg font-bold text-sm hover:bg-gray-200 transition-all"
                             >
-                                <ExternalLink size={18} /> Watch Externally
+                                <ExternalLink size={16} className="inline mr-2" /> Open Externally
                             </a>
                             <button 
                                 onClick={() => { setVideoError(false); setIsVideoLoading(true); }}
-                                className="px-8 py-3 border border-white/20 rounded-lg hover:bg-white/10 transition-all font-bold flex items-center gap-2"
+                                className="px-6 py-2 border border-white/20 rounded-lg hover:bg-white/10 transition-all font-bold text-sm"
                             >
-                                <RefreshCw size={18} /> Retry
+                                <RefreshCw size={16} className="inline mr-2" /> Retry
                             </button>
                         </div>
                     </div>
@@ -207,25 +192,22 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
                         playing={isPlaying}
                         controls={true}
                         onReady={() => setIsVideoLoading(false)}
-                        // Fix: explicitly type state as any to prevent SyntheticEvent conflict with ReactPlayer's custom onProgress argument
                         onProgress={(state: any) => setVideoProgress(state.played)}
                         onEnded={() => { setIsVideoFinished(true); setIsPlaying(false); }}
                         onError={handleVideoError}
-                        // Critical for fixing Error 153/150
-                        // Fix: cast config object to any to avoid TypeScript errors regarding the 'file' property in standard Config types
                         config={{
                             youtube: { 
                                 playerVars: { 
                                     modestbranding: 1, 
                                     rel: 0,
                                     origin: window.location.origin,
-                                    enablejsapi: 1,
-                                    widget_referrer: window.location.origin
+                                    enablejsapi: 1
                                 } 
                             },
                             file: {
                                 attributes: {
-                                    referrerPolicy: "no-referrer-when-downgrade"
+                                    referrerPolicy: "no-referrer-when-downgrade",
+                                    controlsList: 'nodownload'
                                 }
                             }
                         } as any}
@@ -234,74 +216,50 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
              </div>
           </div>
         ) : (
-          /* Simulation Mode Visuals (for modules with no links) */
-          <div className="flex flex-col items-center gap-6 p-8 animate-fadeIn">
-            <div className={`w-32 h-32 rounded-full border-4 flex items-center justify-center transition-all duration-700 ${isVideoFinished ? 'border-osmak-green bg-osmak-green/20' : 'border-white/10 bg-white/5 shadow-[0_0_30px_rgba(255,255,255,0.05)]'}`}>
+          /* Visual Simulation for Empty Links */
+          <div className="flex flex-col items-center gap-6 p-12 text-center animate-fadeIn">
+            <div className={`w-32 h-32 rounded-full border-4 flex items-center justify-center transition-all duration-700 ${isVideoFinished ? 'border-osmak-green bg-osmak-green/20' : 'border-white/10 bg-white/5'}`}>
                 {isVideoFinished ? <CheckCircle size={64} className="text-osmak-green" /> : <Loader2 size={64} className="text-white opacity-20 animate-spin-slow" />}
             </div>
-            <div className="text-center space-y-2">
-                <h2 className="text-4xl font-black">{isVideoFinished ? 'Ready to Test' : 'Content Review'}</h2>
-                <p className="text-gray-500 max-w-sm font-medium">Please review the supplementary materials provided for this section before proceeding.</p>
+            <div className="space-y-2">
+                <h2 className="text-4xl font-black">{isVideoFinished ? 'Materials Reviewed' : 'Reviewing Content'}</h2>
+                <p className="text-gray-500 max-w-sm mx-auto font-medium">Please proceed to the assessment once you have finished reviewing the supplementary files.</p>
             </div>
-            {!isVideoFinished && (
-                <button onClick={() => {setIsVideoFinished(true); setVideoProgress(1);}} className="mt-8 text-xs font-bold text-gray-600 hover:text-white border-b border-gray-800 hover:border-white transition-all">Skip Preview (Admin)</button>
-            )}
           </div>
         )}
       </div>
 
-      {/* Control Bar */}
-      <div className="bg-gray-900/95 backdrop-blur-xl border-t border-white/10 p-6 absolute bottom-0 w-full z-[210]">
-        <div className="max-w-5xl mx-auto space-y-4">
-            {/* Progress Visualization */}
-            <div className="w-full flex items-center gap-4">
-                <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+      {/* Bottom Progress & Unlock Bar */}
+      <div className="bg-gray-900/90 backdrop-blur-xl border-t border-white/10 p-6 absolute bottom-0 w-full z-[210]">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="w-full md:w-auto flex-1 space-y-3">
+                <div className="flex justify-between items-end">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Progress</span>
+                    <span className="text-xs font-mono font-bold text-osmak-green">{Math.round(videoProgress * 100)}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <div 
-                        className={`h-full transition-all duration-300 shadow-[0_0_10px_rgba(0,154,62,0.3)] ${isVideoFinished ? 'bg-osmak-green' : 'bg-blue-500'}`}
+                        className={`h-full transition-all duration-500 ${isVideoFinished ? 'bg-osmak-green shadow-[0_0_15px_rgba(0,154,62,0.5)]' : 'bg-blue-500'}`}
                         style={{ width: `${videoProgress * 100}%` }}
                     />
                 </div>
-                <div className="text-[10px] font-black font-mono text-gray-500 tracking-tighter whitespace-nowrap">
-                    {Math.round(videoProgress * 100)}% COMPLETE
-                </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-xl border transition-colors ${isVideoFinished ? 'bg-osmak-green/10 border-osmak-green/20 text-osmak-green' : 'bg-gray-800 border-white/5 text-gray-400'}`}>
-                        {isVideoFinished ? <CheckCircle size={24} /> : <Play size={24} className={isPlaying ? 'animate-pulse' : ''} />}
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-0.5">Assessment Status</p>
-                        <p className="text-sm font-bold text-white">
-                            {videoError ? 'Verification Mode Active' : isVideoFinished ? 'Unlocked - Ready to Begin' : 'Complete View/Review to Unlock'}
-                        </p>
-                    </div>
-                </div>
-
-                <button 
-                    onClick={() => setShowQuiz(true)}
-                    disabled={!quizReady || (!isVideoFinished && !!module.videoUrl)}
-                    className={`
-                        px-12 py-4 rounded-xl font-black text-lg flex items-center gap-3 transition-all shadow-2xl
-                        ${isVideoFinished || !module.videoUrl 
-                            ? 'bg-osmak-green hover:bg-osmak-green-dark text-white hover:scale-[1.02] active:scale-95' 
-                            : 'bg-gray-800 text-gray-600 cursor-not-allowed grayscale'}
-                    `}
-                >
-                    {loadingQuiz ? <Loader2 className="animate-spin" size={24} /> : <FileText size={24} />}
-                    {loadingQuiz ? 'Initializing Assessment...' : 'Start Assessment'}
-                </button>
-            </div>
+            <button 
+                onClick={() => setShowQuiz(true)}
+                disabled={!quizReady || (!isVideoFinished && !!module.videoUrl)}
+                className={`
+                    px-10 py-4 rounded-xl font-black text-lg flex items-center gap-3 transition-all min-w-[240px] justify-center
+                    ${isVideoFinished || !module.videoUrl 
+                        ? 'bg-osmak-green hover:bg-osmak-green-dark text-white hover:scale-105 active:scale-95 shadow-xl shadow-osmak-green/20' 
+                        : 'bg-gray-800 text-gray-600 cursor-not-allowed'}
+                `}
+            >
+                {loadingQuiz ? <Loader2 className="animate-spin" size={20} /> : <FileText size={20} />}
+                {loadingQuiz ? 'Preparing Quiz...' : 'Start Assessment'}
+            </button>
         </div>
       </div>
-      
-      {error && (
-         <div className="fixed top-28 left-1/2 -translate-x-1/2 bg-yellow-500/90 backdrop-blur-md text-black px-6 py-2.5 rounded-full shadow-2xl flex items-center gap-2 text-xs font-black z-[300] border border-yellow-400 animate-slideDown">
-             <AlertCircle size={14} />
-             <span>Notice: {error}</span>
-         </div>
-      )}
     </div>
   );
 };
