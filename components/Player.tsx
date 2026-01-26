@@ -34,9 +34,19 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
     // Force Google Drive into /preview mode for embedded streaming
     if (processedUrl.includes('drive.google.com')) {
       if (processedUrl.includes('/view')) {
-        processedUrl = processedUrl.replace(/\/view.*$/, '/preview');
+        processedUrl = processedUrl.replace(/\/view(\?usp=sharing)?$/, '/preview');
       } else if (processedUrl.includes('open?id=')) {
         processedUrl = processedUrl.replace('open?id=', 'file/d/') + '/preview';
+      }
+      
+      // Ensure it ends correctly if it's a shared link but not yet /preview
+      if (!processedUrl.endsWith('/preview') && processedUrl.includes('/file/d/')) {
+         const parts = processedUrl.split('/');
+         const fileIdIndex = parts.indexOf('d') + 1;
+         if (fileIdIndex > 0 && parts[fileIdIndex]) {
+            const fileId = parts[fileIdIndex].split(/[?#]/)[0];
+            processedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+         }
       }
     }
 
@@ -44,8 +54,9 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
   };
 
   const safeVideoUrl = getSafeUrl(module.videoUrl || '');
+  const isGoogleDrivePreview = safeVideoUrl.includes('drive.google.com') && safeVideoUrl.includes('/preview');
 
-  // Auto-progression for non-video modules
+  // Auto-progression for non-video modules or simulation
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (!module.videoUrl && isPlaying && videoProgress < 1) {
@@ -56,7 +67,7 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
             setIsVideoFinished(true);
             return 1;
           }
-          return prev + 0.01; // Faster simulation for debug
+          return prev + 0.05; 
         });
       }, 100);
     }
@@ -95,8 +106,12 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
   }, [module]);
 
   const handleVideoError = (e: any) => {
-    console.error("Playback Error:", e);
-    setVideoError(true);
+    console.error("Playback Error Details:", e);
+    // Google Drive previews often throw non-critical errors or fail to signal 'ready' correctly
+    // through react-player because they are essentially iframes.
+    if (!isGoogleDrivePreview) {
+        setVideoError(true);
+    }
     setIsVideoLoading(false);
   };
 
@@ -183,6 +198,21 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
                             </button>
                         </div>
                     </div>
+                 ) : isGoogleDrivePreview ? (
+                    /* FOR GOOGLE DRIVE: Use iframe directly as react-player can't control the Drive player internals */
+                    <iframe
+                        src={safeVideoUrl}
+                        className="w-full h-full"
+                        allow="autoplay"
+                        onLoad={() => {
+                            setIsVideoLoading(false);
+                            // Set high progress for iframes since we can't track actual time
+                            setVideoProgress(1);
+                            setIsVideoFinished(true);
+                        }}
+                        frameBorder="0"
+                        allowFullScreen
+                    ></iframe>
                  ) : (
                     <PlayerComponent
                         ref={playerRef}
@@ -231,7 +261,7 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
 
       {/* Bottom Progress & Unlock Bar */}
       <div className="bg-gray-900/90 backdrop-blur-xl border-t border-white/10 p-6 absolute bottom-0 w-full z-[210]">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="max-w-5xl auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="w-full md:w-auto flex-1 space-y-3">
                 <div className="flex justify-between items-end">
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Progress</span>
