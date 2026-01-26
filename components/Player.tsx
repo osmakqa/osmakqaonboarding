@@ -21,7 +21,7 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
   const [quizReady, setQuizReady] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [videoError, setVideoError] = useState<boolean>(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   
   const playerRef = useRef<any>(null);
@@ -106,11 +106,13 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
   }, [module]);
 
   const handleVideoError = (e: any) => {
-    console.error("Playback Error Details:", e);
-    // Google Drive previews often throw non-critical errors or fail to signal 'ready' correctly
-    // through react-player because they are essentially iframes.
+    console.error("Playback Error:", e);
+    // Determine a string message instead of letting [object Object] through
+    const message = e?.message || "Content restricted or connection lost.";
+    
+    // Only set videoError for non-google drive links or actual critical fails
     if (!isGoogleDrivePreview) {
-        setVideoError(true);
+      setVideoError(message);
     }
     setIsVideoLoading(false);
   };
@@ -179,7 +181,9 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
                         <AlertCircle size={48} className="text-red-500 mb-4" />
                         <h3 className="text-xl font-bold mb-2">Streaming Interrupted</h3>
                         <p className="text-gray-400 text-sm max-w-sm mb-6">
-                            Unable to load content. This usually happens due to hospital firewall restrictions or invalid links.
+                            {videoError === "Content restricted or connection lost." 
+                              ? "The video could not be loaded. This is often due to hospital firewall restrictions on embedded content."
+                              : `Error: ${videoError}`}
                         </p>
                         <div className="flex gap-3">
                             <a 
@@ -191,7 +195,7 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
                                 <ExternalLink size={16} className="inline mr-2" /> Open Externally
                             </a>
                             <button 
-                                onClick={() => { setVideoError(false); setIsVideoLoading(true); }}
+                                onClick={() => { setVideoError(null); setIsVideoLoading(true); }}
                                 className="px-6 py-2 border border-white/20 rounded-lg hover:bg-white/10 transition-all font-bold text-sm"
                             >
                                 <RefreshCw size={16} className="inline mr-2" /> Retry
@@ -199,11 +203,11 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
                         </div>
                     </div>
                  ) : isGoogleDrivePreview ? (
-                    /* FOR GOOGLE DRIVE: Use iframe directly as react-player can't control the Drive player internals */
+                    /* FOR GOOGLE DRIVE: Native iframe is much more stable than react-player for the /preview URL */
                     <iframe
                         src={safeVideoUrl}
                         className="w-full h-full"
-                        allow="autoplay"
+                        allow="autoplay; encrypted-media"
                         onLoad={() => {
                             setIsVideoLoading(false);
                             // Set high progress for iframes since we can't track actual time
@@ -246,7 +250,6 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
              </div>
           </div>
         ) : (
-          /* Visual Simulation for Empty Links */
           <div className="flex flex-col items-center gap-6 p-12 text-center animate-fadeIn">
             <div className={`w-32 h-32 rounded-full border-4 flex items-center justify-center transition-all duration-700 ${isVideoFinished ? 'border-osmak-green bg-osmak-green/20' : 'border-white/10 bg-white/5'}`}>
                 {isVideoFinished ? <CheckCircle size={64} className="text-osmak-green" /> : <Loader2 size={64} className="text-white opacity-20 animate-spin-slow" />}
@@ -259,7 +262,7 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
         )}
       </div>
 
-      {/* Bottom Progress & Unlock Bar */}
+      {/* Bottom Progress Bar */}
       <div className="bg-gray-900/90 backdrop-blur-xl border-t border-white/10 p-6 absolute bottom-0 w-full z-[210]">
         <div className="max-w-5xl auto flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="w-full md:w-auto flex-1 space-y-3">
