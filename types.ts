@@ -1,3 +1,4 @@
+
 export interface Question {
   id: string;
   text: string;
@@ -15,6 +16,7 @@ export interface Module {
   topics: string[]; // For Gemini context
   videoUrl?: string;
   questions?: Question[];
+  allowedRoles?: UserRole[]; // New property for RBAC
 }
 
 export interface ModuleProgress {
@@ -29,10 +31,10 @@ export type UserRole =
   | 'Head / Assistant Head'
   | 'Doctor' 
   | 'Nurse' 
-  | 'Nurse (High-risk Area)' // Renamed from Specialized Nurse
-  | 'Other Clinical (Med Tech, Rad Tech, etc)' // Renamed from Other Clinical
+  | 'Nurse (High-risk Area)' 
+  | 'Other Clinical (Med Tech, Rad Tech, etc)' 
   | 'Non-clinical' 
-  | 'Medical Intern'; // Removed 'Others'
+  | 'Medical Intern';
 
 export interface UserState {
   progress: Record<string, ModuleProgress>;

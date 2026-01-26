@@ -84,28 +84,28 @@ function App() {
   const filteredModules = useMemo(() => {
     if (!currentUser) return [];
     
+    // Determine the effective role for preview/filtering
     let effectiveRole = currentUser.role;
     if (currentUser.role === 'QA Admin' && adminPreviewRole !== 'All') {
         effectiveRole = adminPreviewRole as UserRole;
     }
 
+    // Role-Based Access Logic (RBAC)
+    // 1. QA Admin & Managers always see all modules
     if (effectiveRole === 'QA Admin' || effectiveRole === 'Head / Assistant Head') {
       return modules;
     }
 
+    // 2. Filter modules based on their "allowedRoles" property
     return modules.filter(m => {
-      if (m.id === 'm_qa_dataprivacy') return true;
-      if (['Doctor', 'Nurse', 'Nurse (High-risk Area)', 'Other Clinical (Med Tech, Rad Tech, etc)'].includes(effectiveRole as string)) {
-        if (m.section === 'D. Quality Management System' || m.section === 'E. Advanced Infection Prevention and Control') return false;
-        return m.id !== 'm_ps_1';
+      // If a module has explicitly defined allowedRoles, check against effectiveRole
+      if (m.allowedRoles && m.allowedRoles.length > 0) {
+        return m.allowedRoles.includes(effectiveRole as UserRole);
       }
-      if (effectiveRole === 'Non-clinical') return m.id === 'm_qa_1' || m.id === 'm1';
-      if (effectiveRole === 'Medical Intern') {
-        const allowedSections = ['B. Infection Prevention and Control', 'D. Quality Management System', 'E. Advanced Infection Prevention and Control'];
-        const allowedIds = ['m_qa_1', 'm_ps_2', 'm_ps_pedia_fall', 'm_ps_adult_fall', 'm_ps_error_abbrev', 'm_ipc_waste'];
-        return allowedSections.includes(m.section) || allowedIds.includes(m.id);
-      }
-      return false;
+      
+      // Fallback: Default to allowing clinical roles if allowedRoles is missing/undefined
+      const clinicalRoles: UserRole[] = ['Doctor', 'Nurse', 'Nurse (High-risk Area)', 'Other Clinical (Med Tech, Rad Tech, etc)'];
+      return clinicalRoles.includes(effectiveRole as UserRole);
     });
   }, [currentUser, adminPreviewRole, modules]);
 
@@ -200,7 +200,6 @@ function App() {
     setView(AppView.DASHBOARD);
   };
 
-  // --- HYBRID COURSE MANAGEMENT (Saves to Firebase) ---
   const handleAddModule = async (newModule: Module) => {
     if (await dataService.saveModule(newModule)) {
       setModules(prev => [...prev, newModule]);
@@ -344,7 +343,7 @@ function App() {
       {view === AppView.PLAYER && activeModule && (
         <Player module={activeModule} onExit={() => { setActiveModuleId(null); setView(AppView.DASHBOARD); }} onComplete={handleModuleCompletion} />
       )}
-
+      
       {showCertificate && currentUser && (
         <div className="fixed inset-0 z-[300] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
            <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full flex flex-col relative overflow-hidden">

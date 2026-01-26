@@ -13,15 +13,14 @@ interface AdminDashboardProps {
 }
 
 const REGISTRATION_ROLES: UserRole[] = [
-    // 'QA Admin', // Removed as per request
+    'QA Admin',
     'Head / Assistant Head',
     'Doctor',
     'Nurse',
-    'Nurse (High-risk Area)', // Renamed from Specialized Nurse
-    'Other Clinical (Med Tech, Rad Tech, etc)', // Renamed from Other Clinical
+    'Nurse (High-risk Area)',
+    'Other Clinical (Med Tech, Rad Tech, etc)',
     'Medical Intern',
     'Non-clinical',
-    // Removed 'Others'
   ];
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, onUpdateUser, onDeleteUser, isLoading = false }) => {
@@ -288,7 +287,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                                                     </div>
                                                 </div>
 
-                                                {/* Answers Expansion */}
                                                 {isCompleted && module.questions && module.questions.length > 0 && (
                                                     <div className="ml-14 mt-4 bg-white/50 border rounded-lg p-4 text-xs space-y-3">
                                                         <h5 className="font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mb-2">
@@ -332,7 +330,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
         </div>
       )}
 
-      {/* Edit User Modal */}
       {editingUser && editFormData && (
           <div className="fixed inset-0 z-[250] bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
               <div className="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
@@ -374,7 +371,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
           </div>
       )}
 
-      {/* Delete User Modal */}
       {userToDelete && (
         <div className="fixed inset-0 z-[300] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
             <div className="bg-white rounded-xl shadow-xl max-md w-full overflow-hidden">

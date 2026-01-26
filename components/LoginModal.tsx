@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { UserRole, RegistrationData, UserProfile } from '../types';
 import { LogIn, UserPlus, ArrowLeft, Check, Hash, ShieldAlert, Loader2, AlertTriangle, Users, User } from 'lucide-react';
@@ -10,16 +11,15 @@ interface LoginModalProps {
   isLoading?: boolean;
 }
 
+// QA Admin is excluded from public registration for security
 const REGISTRATION_ROLES: UserRole[] = [
-  // 'QA Admin', // Removed as per request
   'Head / Assistant Head',
   'Doctor', 
   'Nurse',
-  'Nurse (High-risk Area)', // Renamed from Specialized Nurse
-  'Other Clinical (Med Tech, Rad Tech, etc)', // Renamed from Other Clinical
+  'Nurse (High-risk Area)',
+  'Other Clinical (Med Tech, Rad Tech, etc)',
   'Medical Intern',
   'Non-clinical',
-  // Removed 'Others'
 ];
 
 type ViewMode = 'LOGIN' | 'REGISTER';
@@ -53,10 +53,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
     const lastNameInput = loginLastName.trim().toLowerCase();
     const hospitalIdInput = loginHospitalNumber.trim().toLowerCase();
 
-    // 1. QA Admin Bypass (Hardcoded)
-    if (hospitalIdInput === '999999') {
+    // 1. QA Admin Bypass (Hardcoded Credentials)
+    if (hospitalIdInput === '999999' || (hospitalIdInput === '129184' && lastNameInput === 'qa')) {
          const adminUser: UserProfile = {
-            firstName: 'QA', lastName: 'Admin', hospitalNumber: '999999', role: 'QA Admin',
+            firstName: 'QA', lastName: 'Admin', hospitalNumber: hospitalIdInput, role: 'QA Admin',
             middleInitial: '', birthday: '', plantillaPosition: 'Administrator',
             division: 'Quality Assurance Division', departmentOrSection: 'Process and Performance Improvement Section',
             progress: {}
@@ -66,7 +66,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
     }
 
     // 2. Real User Login (Priority)
-    // Check if Last Name AND Hospital Number match a real user
     if (lastNameInput && hospitalIdInput) {
         const foundUser = users.find(u => 
             u.hospitalNumber.toLowerCase() === hospitalIdInput && 
@@ -80,9 +79,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
     }
 
     // 3. Beta / Demo Access
-    // If no real user found, check if a Role was manually selected for testing
     if (loginRole) {
-        // Create a temporary/demo profile based on the selected role
         const demoUser: UserProfile = {
             firstName: 'Beta',
             lastName: loginLastName || 'Tester',
@@ -100,7 +97,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
         return;
     }
 
-    // 4. Failure
     setLoginError('User not found. Please check your Last Name and Hospital ID, or select a Role for Beta access.');
   };
 
@@ -110,7 +106,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Comprehensive Validation Check with Alerts
     const errors: string[] = [];
     if (!regData.firstName.trim()) errors.push("First Name");
     if (!regData.lastName.trim()) errors.push("Last Name");
@@ -126,7 +121,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
         return;
     }
 
-    // Check if ID already exists
     if (users.some(u => u.hospitalNumber === regData.hospitalNumber)) {
         alert("This Hospital Number is already registered. Please check or contact admin.");
         return;
@@ -139,7 +133,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
     setRegData(prev => ({
       ...prev,
       [field]: value,
-      // Reset sub-selection if division changes
       ...(field === 'division' ? { departmentOrSection: '' } : {})
     }));
   };
@@ -165,20 +158,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
           </div>
           
           <div className="p-8">
-            {/* Beta / Testing Notice */}
             <div className="mb-6 p-3 bg-orange-50 border border-orange-200 text-orange-800 text-xs rounded-lg flex items-start gap-3">
                <div className="p-1.5 bg-orange-100 text-orange-600 rounded-full shrink-0">
                   <AlertTriangle size={16} />
                </div>
                <div>
-                  <span className="font-bold block text-sm mb-0.5">Beta Feature</span>
-                  <span className="opacity-90">Enter your credentials to login, <strong>OR</strong> just select a Role below to test the app as a guest.</span>
+                  <span className="font-bold block text-sm mb-0.5">Administrative Access</span>
+                  <span className="opacity-90 text-[11px]">Use hospital number as password. QA Admins can manage all accounts.</span>
                </div>
             </div>
 
             <form onSubmit={handleLoginSubmit} className="space-y-4">
-              
-              {/* Last Name Input */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
                   <User size={16} className="text-gray-400" />
@@ -193,7 +183,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                 />
               </div>
 
-              {/* Hospital Number Input */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
                   <Hash size={16} className="text-gray-400" />
@@ -214,7 +203,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                  <div className="h-px bg-gray-200 flex-1"></div>
               </div>
 
-              {/* Role Selection (Beta Access) */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
                   <Users size={16} className="text-gray-400" />
@@ -252,7 +240,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                     const adminUser: UserProfile = {
                         firstName: 'QA',
                         lastName: 'Admin',
-                        hospitalNumber: '999999',
+                        hospitalNumber: '129184',
                         role: 'QA Admin',
                         middleInitial: '',
                         birthday: '',
@@ -266,7 +254,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                 className="w-full flex justify-center items-center gap-2 py-2 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg shadow-md font-bold text-xs transition-colors mt-2"
               >
                 <ShieldAlert size={14} />
-                Bypass Login (QA Admin)
+                Bypass Login (qa/129184)
               </button>
             </form>
             
@@ -286,7 +274,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
     );
   }
 
-  // REGISTER VIEW
   return (
     <div className="fixed inset-0 z-[200] bg-gray-900 bg-opacity-90 flex items-center justify-center p-4 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-fadeIn flex flex-col max-h-[90vh]">
@@ -306,7 +293,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
         <div className="p-6 overflow-y-auto custom-scrollbar">
           <form onSubmit={handleRegisterSubmit} className="space-y-4">
             <fieldset disabled={isLoading} className="contents">
-            {/* Personal Info */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">First Name</label>
@@ -371,7 +357,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
               </div>
             </div>
 
-            {/* Role Selection */}
             <div>
                <label className="block text-xs font-bold text-gray-700 mb-1">Role</label>
                <select 
@@ -384,7 +369,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                </select>
             </div>
 
-            {/* Division Selection */}
             <div>
                <label className="block text-xs font-bold text-gray-700 mb-1">Division</label>
                <select 
@@ -399,7 +383,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                </select>
             </div>
 
-            {/* Department/Section Selection */}
             {showSectionDropdown && (
                <div className="animate-fadeIn">
                   <label className="block text-xs font-bold text-gray-700 mb-1">Department / Section</label>
