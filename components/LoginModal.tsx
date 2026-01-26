@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { UserRole, RegistrationData, UserProfile } from '../types';
-import { LogIn, UserPlus, ArrowLeft, Check, Hash, ShieldAlert, Loader2, AlertTriangle, Users, User } from 'lucide-react';
+import { LogIn, UserPlus, ArrowLeft, Check, Hash, Loader2, User } from 'lucide-react';
 import { ORGANIZATIONAL_STRUCTURE } from '../constants';
 
 interface LoginModalProps {
@@ -29,7 +29,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
   
   // Login State
   const [loginLastName, setLoginLastName] = useState('');
-  const [loginRole, setLoginRole] = useState<string>(''); 
   const [loginHospitalNumber, setLoginHospitalNumber] = useState('');
   const [loginError, setLoginError] = useState('');
   
@@ -53,7 +52,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
     const lastNameInput = loginLastName.trim().toLowerCase();
     const hospitalIdInput = loginHospitalNumber.trim().toLowerCase();
 
-    // 1. QA Admin Bypass (Hardcoded Credentials)
+    // 1. QA Admin Bypass (Hardcoded Credentials still functional but hidden from UI)
     if (hospitalIdInput === '999999' || (hospitalIdInput === '129184' && lastNameInput === 'qa')) {
          const adminUser: UserProfile = {
             firstName: 'QA', lastName: 'Admin', hospitalNumber: hospitalIdInput, role: 'QA Admin',
@@ -65,39 +64,29 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
         return;
     }
 
-    // 2. Real User Login (Priority)
+    // 2. Conditional Login Logic
     if (lastNameInput && hospitalIdInput) {
-        const foundUser = users.find(u => 
-            u.hospitalNumber.toLowerCase() === hospitalIdInput && 
-            u.lastName.toLowerCase() === lastNameInput
-        );
-
-        if (foundUser) {
-            onLogin(foundUser.role as UserRole, foundUser);
+        // Find users sharing this last name
+        const usersWithLastName = users.filter(u => u.lastName.toLowerCase() === lastNameInput);
+        
+        if (usersWithLastName.length > 0) {
+            // Check if any of these users have the matching hospital number
+            const matchedUser = usersWithLastName.find(u => u.hospitalNumber.toLowerCase() === hospitalIdInput);
+            
+            if (matchedUser) {
+                onLogin(matchedUser.role as UserRole, matchedUser);
+                return;
+            } else {
+                // Last name exists but ID doesn't match any profile with that name
+                setLoginError('Please contact App Administrator.');
+                return;
+            }
+        } else {
+            // Last name not found in the database at all
+            setLoginError('Please register first to access.');
             return;
         }
     }
-
-    // 3. Beta / Demo Access
-    if (loginRole) {
-        const demoUser: UserProfile = {
-            firstName: 'Beta',
-            lastName: loginLastName || 'Tester',
-            hospitalNumber: hospitalIdInput || `beta-${Date.now()}`,
-            role: loginRole as UserRole,
-            middleInitial: '',
-            birthday: '',
-            plantillaPosition: 'Beta Access',
-            division: 'Clinical Division',
-            departmentOrSection: 'General',
-            progress: {}
-        };
-        
-        onLogin(loginRole as UserRole, demoUser);
-        return;
-    }
-
-    setLoginError('User not found. Please check your Last Name and Hospital ID, or select a Role for Beta access.');
   };
 
   const availableSections = regData.division ? ORGANIZATIONAL_STRUCTURE[regData.division] || [] : [];
@@ -158,17 +147,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
           </div>
           
           <div className="p-8">
-            <div className="mb-6 p-3 bg-orange-50 border border-orange-200 text-orange-800 text-xs rounded-lg flex items-start gap-3">
-               <div className="p-1.5 bg-orange-100 text-orange-600 rounded-full shrink-0">
-                  <AlertTriangle size={16} />
-               </div>
-               <div>
-                  <span className="font-bold block text-sm mb-0.5">Administrative Access</span>
-                  <span className="opacity-90 text-[11px]">Use hospital number as password. QA Admins can manage all accounts.</span>
-               </div>
-            </div>
-
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <form onSubmit={handleLoginSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
                   <User size={16} className="text-gray-400" />
@@ -180,6 +159,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                   onChange={(e) => setLoginLastName(e.target.value)}
                   placeholder="Enter Last Name"
                   className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-white text-black"
+                  required
                 />
               </div>
 
@@ -194,34 +174,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                   onChange={(e) => setLoginHospitalNumber(e.target.value)}
                   placeholder="e.g. 123456"
                   className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-white text-black"
+                  required
                 />
               </div>
 
-              <div className="flex items-center gap-3 py-1">
-                 <div className="h-px bg-gray-200 flex-1"></div>
-                 <span className="text-xs text-gray-400 font-medium uppercase">OR Select Beta Role</span>
-                 <div className="h-px bg-gray-200 flex-1"></div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1 flex items-center gap-2">
-                  <Users size={16} className="text-gray-400" />
-                  Beta Access Role
-                </label>
-                <select
-                  value={loginRole}
-                  onChange={(e) => setLoginRole(e.target.value)}
-                  className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-white text-black"
-                >
-                    <option value="">-- Select Role (Guest Access) --</option>
-                    {REGISTRATION_ROLES.map(role => (
-                        <option key={role} value={role}>{role}</option>
-                    ))}
-                </select>
-              </div>
-
               {loginError && (
-                <div className="p-3 bg-red-50 text-red-600 text-xs rounded border border-red-200 font-medium">
+                <div className="p-3 bg-red-50 text-red-600 text-xs rounded border border-red-200 font-bold text-center">
                   {loginError}
                 </div>
               )}
@@ -233,32 +191,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                 <LogIn size={18} />
                 Enter Portal
               </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                    const adminUser: UserProfile = {
-                        firstName: 'QA',
-                        lastName: 'Admin',
-                        hospitalNumber: '129184',
-                        role: 'QA Admin',
-                        middleInitial: '',
-                        birthday: '',
-                        plantillaPosition: 'Administrator',
-                        division: 'Quality Assurance Division',
-                        departmentOrSection: '',
-                        progress: {}
-                    };
-                    onLogin('QA Admin', adminUser);
-                }}
-                className="w-full flex justify-center items-center gap-2 py-2 px-4 bg-gray-800 hover:bg-gray-700 text-white rounded-lg shadow-md font-bold text-xs transition-colors mt-2"
-              >
-                <ShieldAlert size={14} />
-                Bypass Login (qa/129184)
-              </button>
             </form>
             
-            <div className="mt-6 flex flex-col gap-3 text-center border-t border-gray-100 pt-4">
+            <div className="mt-8 flex flex-col gap-3 text-center border-t border-gray-100 pt-6">
                <button
                   type="button"
                   onClick={() => setView('REGISTER')}

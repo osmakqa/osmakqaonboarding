@@ -6,12 +6,13 @@ import Player from './components/Player';
 import LoginModal from './components/LoginModal';
 import AdminDashboard from './components/AdminDashboard';
 import CourseManager from './components/CourseManager';
+import RoleAccessSettings from './components/RoleAccessSettings';
 import { MODULES, PASSING_SCORE } from './constants';
 import { Module, UserState, ModuleProgress, AppView, UserRole, UserProfile, RegistrationData } from './types';
 import { dataService } from './services/dataService';
 import { 
   Trophy, Activity, Star, Users, LayoutDashboard, Eye, Award, X, Download, Loader2,
-  ShieldCheck, HeartPulse, FileText, Microscope, Syringe, BookOpen
+  ShieldCheck, HeartPulse, FileText, Microscope, Syringe, BookOpen, Settings
 } from 'lucide-react';
 
 const INITIAL_PROGRESS_TEMPLATE: Record<string, ModuleProgress> = {};
@@ -212,13 +213,26 @@ function App() {
     }
   };
 
+  const handleUpdateModules = async (updatedModules: Module[]) => {
+    setIsProcessing(true);
+    try {
+        for (const mod of updatedModules) {
+            await dataService.saveModule(mod);
+        }
+        setModules(updatedModules);
+    } finally {
+        setIsProcessing(false);
+    }
+  };
+
   const handleDeleteModule = async (moduleId: string) => {
     if (await dataService.deleteModule(moduleId)) {
       setModules(prev => prev.filter(m => m.id !== moduleId));
     }
   };
 
-  const visibleModuleIds = filteredModules.map(m => m.id);
+  // Fixed the mapping here: using m.id instead of non-existent id
+  const visibleModuleIds = filteredModules.map(m => m.id); 
   const completedCount = visibleModuleIds.filter(id => currentUserProgress[id]?.isCompleted).length;
   const progressPercent = visibleModuleIds.length > 0 ? Math.round((completedCount / visibleModuleIds.length) * 100) : 0;
   const isAllCompleted = visibleModuleIds.length > 0 && completedCount === visibleModuleIds.length;
@@ -247,14 +261,15 @@ function App() {
       />
       
       {currentUser?.role === 'QA Admin' && (
-          <div className="bg-gray-800 text-white px-6 py-2 flex flex-col md:flex-row gap-4 text-sm justify-between items-center shadow-inner">
-              <div className="flex gap-4">
+          <div className="bg-gray-800 text-white px-6 py-2 flex flex-col md:flex-row gap-4 text-sm justify-between items-center shadow-inner overflow-x-auto">
+              <div className="flex gap-4 shrink-0">
                   <button onClick={() => setView(AppView.ADMIN_DASHBOARD)} className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.ADMIN_DASHBOARD ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}><Users size={16} /> Employees</button>
                   <button onClick={() => setView(AppView.COURSE_MANAGER)} className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.COURSE_MANAGER ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}><BookOpen size={16} /> Course Manager</button>
+                  <button onClick={() => setView(AppView.ROLE_ACCESS)} className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.ROLE_ACCESS ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}><ShieldCheck size={16} /> Role Access</button>
                   <button onClick={() => setView(AppView.DASHBOARD)} className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.DASHBOARD ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}><LayoutDashboard size={16} /> Course Preview</button>
               </div>
               {view === AppView.DASHBOARD && (
-                  <div className="flex items-center gap-2 bg-gray-700 p-1 pl-3 rounded border border-gray-600">
+                  <div className="flex items-center gap-2 bg-gray-700 p-1 pl-3 rounded border border-gray-600 shrink-0">
                       <span className="text-gray-300 text-xs font-bold uppercase flex items-center gap-1"><Eye size={12} /> Preview as:</span>
                       <select value={adminPreviewRole} onChange={(e) => setAdminPreviewRole(e.target.value)} className="bg-white text-black border-none rounded px-2 py-1 text-xs outline-none cursor-pointer">
                           <option value="All">QA Admin (View All)</option>
@@ -280,6 +295,12 @@ function App() {
       {view === AppView.COURSE_MANAGER && currentUser?.role === 'QA Admin' && (
         <main className="flex-1 max-w-7xl mx-auto w-full p-6 animate-fadeIn">
             <CourseManager modules={modules} onAddModule={handleAddModule} onUpdateModule={handleUpdateModule} onDeleteModule={handleDeleteModule} />
+        </main>
+      )}
+
+      {view === AppView.ROLE_ACCESS && currentUser?.role === 'QA Admin' && (
+        <main className="flex-1 max-w-7xl mx-auto w-full p-6 animate-fadeIn">
+            <RoleAccessSettings modules={modules} onUpdateModules={handleUpdateModules} />
         </main>
       )}
 

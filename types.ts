@@ -47,7 +47,8 @@ export enum AppView {
   PLAYER = 'PLAYER',
   QUIZ = 'QUIZ',
   ADMIN_DASHBOARD = 'ADMIN_DASHBOARD',
-  COURSE_MANAGER = 'COURSE_MANAGER'
+  COURSE_MANAGER = 'COURSE_MANAGER',
+  ROLE_ACCESS = 'ROLE_ACCESS'
 }
 
 export interface RegistrationData {
