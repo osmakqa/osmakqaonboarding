@@ -325,7 +325,7 @@ function App() {
                 <button key={section} onClick={() => setActiveTab(section)} className={`flex items-center p-3 rounded-lg border transition-all ${activeTab === section ? 'border-osmak-green bg-osmak-green/5 ring-1 ring-osmak-green' : 'border-gray-200 bg-white hover:border-osmak-green/50'}`}>
                   <div className={`w-8 h-8 rounded-md flex items-center justify-center mr-3 ${activeTab === section ? 'bg-osmak-green text-white' : 'bg-gray-100 text-gray-500'}`}>{getSectionIcon(section)}</div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="text-xs font-bold leading-tight truncate">{section}</div>
+                    <div className="text-xs font-bold leading-tight truncate text-black">{section}</div>
                   </div>
                 </button>
               ))}

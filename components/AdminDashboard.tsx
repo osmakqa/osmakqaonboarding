@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { UserProfile, RegistrationData, UserRole, OrganizationalStructure, Module } from '../types';
 import { MODULES, ORGANIZATIONAL_STRUCTURE, PASSING_SCORE } from '../constants';
@@ -263,7 +264,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                     <div className="space-y-6">
                         {sectionNames.map(section => (
                             <div key={section} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                                <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 font-bold text-gray-800 text-sm">{section}</div>
+                                <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 font-bold text-black text-sm">{section}</div>
                                 <div className="divide-y divide-gray-100">
                                     {modulesBySection[section].map(module => {
                                         const progress = selectedUser.progress?.[module.id];
