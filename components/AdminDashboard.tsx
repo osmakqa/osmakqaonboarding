@@ -1,9 +1,7 @@
-
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { UserProfile, RegistrationData, UserRole, OrganizationalStructure, Module } from '../types';
 import { MODULES, ORGANIZATIONAL_STRUCTURE, PASSING_SCORE } from '../constants';
-import { Search, UserPlus, CheckCircle, XCircle, FileText, User, Filter, RefreshCw, BarChart3, Users, Loader2, Pencil, Save, Trash2, ShieldCheck } from 'lucide-react';
+import { Search, UserPlus, CheckCircle, XCircle, FileText, User, Filter, RefreshCw, BarChart3, Users, Loader2, Pencil, Save, Trash2, ShieldCheck, HelpCircle } from 'lucide-react';
 
 interface AdminDashboardProps {
   users: UserProfile[];
@@ -172,22 +170,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3 items-center">
             <div className="relative w-full lg:col-span-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
-                <input type="text" placeholder="Search name or ID..." className="pl-9 pr-4 py-2 bg-white text-gray-900 border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-osmak-green focus:border-osmak-green placeholder-gray-400" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                <input type="text" placeholder="Search name or ID..." className="pl-9 pr-4 py-2 bg-white text-black border border-gray-300 rounded-md text-sm w-full focus:ring-2 focus:ring-osmak-green focus:border-osmak-green placeholder-gray-400" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
-            <select className="w-full py-2 px-3 bg-white text-gray-900 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-osmak-green focus:border-osmak-green" value={filterDivision} onChange={(e) => { setFilterDivision(e.target.value); setFilterDept(''); }}>
+            <select className="w-full py-2 px-3 bg-white text-black border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-osmak-green focus:border-osmak-green" value={filterDivision} onChange={(e) => { setFilterDivision(e.target.value); setFilterDept(''); }}>
                 <option value="">All Divisions</option>
                 {Object.keys(ORGANIZATIONAL_STRUCTURE).map(d => <option key={d} value={d}>{d}</option>)}
             </select>
-            <select className="w-full py-2 px-3 bg-white text-gray-900 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:opacity-50 disabled:bg-gray-100" value={filterDept} onChange={(e) => setFilterDept(e.target.value)} disabled={!filterDivision}>
+            <select className="w-full py-2 px-3 bg-white text-black border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:opacity-50 disabled:bg-gray-100" value={filterDept} onChange={(e) => setFilterDept(e.target.value)} disabled={!filterDivision}>
                 <option value="">All Departments</option>
                 {availableDepts.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
-            <select className="w-full py-2 px-3 bg-white text-gray-900 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-osmak-green focus:border-osmak-green" value={filterRole} onChange={(e) => setFilterRole(e.target.value)}>
+            <select className="w-full py-2 px-3 bg-white text-black border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-osmak-green focus:border-osmak-green" value={filterRole} onChange={(e) => setFilterRole(e.target.value)}>
                 <option value="">All Roles</option>
                 {REGISTRATION_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
             <div className="flex gap-2">
-                 <button onClick={clearFilters} title="Clear Filters" className="flex items-center justify-center p-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors border border-gray-300"><RefreshCw size={18} /></button>
+                 <button onClick={clearFilters} title="Clear Filters" className="flex items-center justify-center p-2 bg-white text-black rounded-md hover:bg-gray-50 transition-colors border border-gray-300"><RefreshCw size={18} /></button>
                  <button onClick={() => setShowRegisterModal(true)} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-osmak-green text-white rounded-md hover:bg-osmak-green-dark transition-colors font-medium shadow-sm whitespace-nowrap"><UserPlus size={18} /> Register</button>
             </div>
         </div>
@@ -272,18 +270,54 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                                         const isCompleted = progress?.isCompleted;
                                         const score = progress?.highScore || 0;
                                         const passed = score >= PASSING_SCORE;
+                                        const userAnswers = progress?.lastAttemptAnswers || {};
+                                        
                                         return (
-                                            <div key={module.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isCompleted ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>{isCompleted ? <CheckCircle size={20}/> : <FileText size={20} />}</div>
-                                                    <div>
-                                                        <div className="font-bold text-gray-900 text-sm md:text-base">{module.title}</div>
-                                                        <div className="text-xs text-gray-500">{module.duration} &bull; {module.topics.slice(0, 2).join(', ')}</div>
+                                            <div key={module.id} className="p-4 hover:bg-gray-50 transition-colors">
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isCompleted ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>{isCompleted ? <CheckCircle size={20}/> : <FileText size={20} />}</div>
+                                                        <div>
+                                                            <div className="font-bold text-gray-900 text-sm md:text-base">{module.title}</div>
+                                                            <div className="text-xs text-gray-500">{module.topics.slice(0, 2).join(', ')}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-6 shrink-0 ml-4">
+                                                         {isCompleted ? <div className="text-right"><div className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Score</div><div className={`text-lg font-bold ${passed ? 'text-green-600' : 'text-red-600'}`}>{score}%</div></div> : <div className="px-3 py-1 bg-gray-100 text-gray-500 rounded text-xs font-medium">Not Started</div>}
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-6 shrink-0 ml-4">
-                                                     {isCompleted ? <div className="text-right"><div className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Score</div><div className={`text-lg font-bold ${passed ? 'text-green-600' : 'text-red-600'}`}>{score}%</div></div> : <div className="px-3 py-1 bg-gray-100 text-gray-500 rounded text-xs font-medium">Not Started</div>}
-                                                </div>
+
+                                                {/* Answers Expansion */}
+                                                {isCompleted && module.questions && module.questions.length > 0 && (
+                                                    <div className="ml-14 mt-4 bg-white/50 border rounded-lg p-4 text-xs space-y-3">
+                                                        <h5 className="font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mb-2">
+                                                            <HelpCircle size={12} /> Detailed Responses
+                                                        </h5>
+                                                        {module.questions.map((q, idx) => {
+                                                            const selectedIdx = userAnswers[q.id];
+                                                            const isCorrect = selectedIdx === q.correctAnswerIndex;
+                                                            return (
+                                                                <div key={q.id} className="border-l-2 pl-3 py-1 border-gray-100">
+                                                                    <div className="font-medium text-gray-800 mb-1">{idx + 1}. {q.text}</div>
+                                                                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+                                                                        <div className="flex items-center gap-1">
+                                                                            <span className="text-gray-400">User:</span>
+                                                                            <span className={`font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                                                                                {selectedIdx !== undefined ? q.options[selectedIdx] : 'No Answer'}
+                                                                            </span>
+                                                                        </div>
+                                                                        {!isCorrect && (
+                                                                            <div className="flex items-center gap-1">
+                                                                                <span className="text-gray-400">Correct:</span>
+                                                                                <span className="text-green-600 font-medium">{q.options[q.correctAnswerIndex]}</span>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
                                             </div>
                                         )
                                     })}
@@ -309,21 +343,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                       <form onSubmit={handleUpdateSubmit} className="space-y-4">
                            <fieldset disabled={isLoading} className="contents">
                                <div className="grid grid-cols-2 gap-3">
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">First Name</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.firstName} onChange={e => handleEditFormChange('firstName', e.target.value)} /></div>
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Last Name</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.lastName} onChange={e => handleEditFormChange('lastName', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">First Name</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.firstName} onChange={e => handleEditFormChange('firstName', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Last Name</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.lastName} onChange={e => handleEditFormChange('lastName', e.target.value)} /></div>
                                </div>
                                <div className="grid grid-cols-2 gap-3">
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Middle Initial</label><input type="text" maxLength={2} className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.middleInitial} onChange={e => handleEditFormChange('middleInitial', e.target.value)} /></div>
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Birthday</label><input type="date" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.birthday} onChange={e => handleEditFormChange('birthday', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Middle Initial</label><input type="text" maxLength={2} className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.middleInitial} onChange={e => handleEditFormChange('middleInitial', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Birthday</label><input type="date" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.birthday} onChange={e => handleEditFormChange('birthday', e.target.value)} /></div>
                                </div>
                                <div className="grid grid-cols-2 gap-3">
                                    <div><label className="text-xs font-bold block mb-1 text-gray-500">Hospital Number (Read-only)</label><input type="text" readOnly disabled className="w-full p-2 border border-gray-300 rounded text-sm bg-gray-200 text-gray-600" value={editFormData.hospitalNumber} /></div>
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Plantilla Position</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.plantillaPosition} onChange={e => handleEditFormChange('plantillaPosition', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Plantilla Position</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.plantillaPosition} onChange={e => handleEditFormChange('plantillaPosition', e.target.value)} /></div>
                                </div>
-                               <div><label className="text-xs font-bold block mb-1 text-gray-700">Role</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.role} onChange={e => handleEditFormChange('role', e.target.value)}><option value="" disabled>Select Role</option>{REGISTRATION_ROLES.map(r => <option key={r} value={r}>{r}</option>)}</select></div>
-                               <div><label className="text-xs font-bold block mb-1 text-gray-700">Division</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.division} onChange={e => handleEditFormChange('division', e.target.value)}><option value="" disabled>Select Division</option>{Object.keys(ORGANIZATIONAL_STRUCTURE).map(d => <option key={d} value={d}>{d}</option>)}</select></div>
+                               <div><label className="text-xs font-bold block mb-1 text-gray-700">Role</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.role} onChange={e => handleEditFormChange('role', e.target.value)}><option value="" disabled>Select Role</option>{REGISTRATION_ROLES.map(r => <option key={r} value={r}>{r}</option>)}</select></div>
+                               <div><label className="text-xs font-bold block mb-1 text-gray-700">Division</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.division} onChange={e => handleEditFormChange('division', e.target.value)}><option value="" disabled>Select Division</option>{Object.keys(ORGANIZATIONAL_STRUCTURE).map(d => <option key={d} value={d}>{d}</option>)}</select></div>
                                {editFormData.division && (ORGANIZATIONAL_STRUCTURE[editFormData.division]||[]).length > 0 && (
-                                   <div className="animate-fadeIn"><label className="text-xs font-bold block mb-1 text-gray-700">Department/Section</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.departmentOrSection} onChange={e => handleEditFormChange('departmentOrSection', e.target.value)}><option value="" disabled>Select Dept</option>{(ORGANIZATIONAL_STRUCTURE[editFormData.division] || []).map(d => <option key={d} value={d}>{d}</option>)}</select></div>
+                                   <div className="animate-fadeIn"><label className="text-xs font-bold block mb-1 text-gray-700">Department/Section</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={editFormData.departmentOrSection} onChange={e => handleEditFormChange('departmentOrSection', e.target.value)}><option value="" disabled>Select Dept</option>{(ORGANIZATIONAL_STRUCTURE[editFormData.division] || []).map(d => <option key={d} value={d}>{d}</option>)}</select></div>
                                )}
                            </fieldset>
                            <div className="flex justify-end gap-3 pt-4">
@@ -342,7 +376,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
       {/* Delete User Modal */}
       {userToDelete && (
         <div className="fixed inset-0 z-[300] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden">
+            <div className="bg-white rounded-xl shadow-xl max-md w-full overflow-hidden">
                 <div className="bg-red-600 text-white p-4">
                     <h3 className="font-bold text-lg">Confirm Deletion</h3>
                 </div>
@@ -362,7 +396,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                           value={deletePassword}
                           onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(''); }}
                           placeholder="Enter 'osmak123' to confirm"
-                          className={`block w-full px-3 py-2 text-sm rounded-lg border ${deleteError ? 'border-red-500 ring-red-500' : 'border-gray-300 focus:ring-red-500 focus:border-red-500'} bg-white text-gray-900`}
+                          className={`block w-full px-3 py-2 text-sm rounded-lg border bg-white text-black ${deleteError ? 'border-red-500 ring-red-500' : 'border-gray-300 focus:ring-red-500 focus:border-red-500'}`}
                           autoFocus
                         />
                         {deleteError && <p className="text-xs text-red-600 mt-1">{deleteError}</p>}
@@ -394,21 +428,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                       <form onSubmit={handleRegisterSubmit} className="space-y-4">
                            <fieldset disabled={isLoading} className="contents">
                                <div className="grid grid-cols-2 gap-3">
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">First Name</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.firstName} onChange={e => handleRegChange('firstName', e.target.value)} /></div>
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Last Name</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.lastName} onChange={e => handleRegChange('lastName', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">First Name</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.firstName} onChange={e => handleRegChange('firstName', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Last Name</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.lastName} onChange={e => handleRegChange('lastName', e.target.value)} /></div>
                                </div>
                                <div className="grid grid-cols-2 gap-3">
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Middle Initial</label><input type="text" maxLength={2} className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.middleInitial} onChange={e => handleRegChange('middleInitial', e.target.value)} /></div>
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Birthday</label><input type="date" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.birthday} onChange={e => handleRegChange('birthday', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Middle Initial</label><input type="text" maxLength={2} className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.middleInitial} onChange={e => handleRegChange('middleInitial', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Birthday</label><input type="date" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.birthday} onChange={e => handleRegChange('birthday', e.target.value)} /></div>
                                </div>
                                <div className="grid grid-cols-2 gap-3">
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Hospital Number</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.hospitalNumber} onChange={e => handleRegChange('hospitalNumber', e.target.value)} /></div>
-                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Plantilla Position</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.plantillaPosition} onChange={e => handleRegChange('plantillaPosition', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Hospital Number</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.hospitalNumber} onChange={e => handleRegChange('hospitalNumber', e.target.value)} /></div>
+                                   <div><label className="text-xs font-bold block mb-1 text-gray-700">Plantilla Position</label><input type="text" required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.plantillaPosition} onChange={e => handleRegChange('plantillaPosition', e.target.value)} /></div>
                                </div>
-                               <div><label className="text-xs font-bold block mb-1 text-gray-700">Role</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.role} onChange={e => handleRegChange('role', e.target.value)}><option value="" disabled>Select Role</option>{REGISTRATION_ROLES.map(r => <option key={r} value={r}>{r}</option>)}</select></div>
-                               <div><label className="text-xs font-bold block mb-1 text-gray-700">Division</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.division} onChange={e => handleRegChange('division', e.target.value)}><option value="" disabled>Select Division</option>{Object.keys(ORGANIZATIONAL_STRUCTURE).map(d => <option key={d} value={d}>{d}</option>)}</select></div>
+                               <div><label className="text-xs font-bold block mb-1 text-gray-700">Role</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.role} onChange={e => handleRegChange('role', e.target.value)}><option value="" disabled>Select Role</option>{REGISTRATION_ROLES.map(r => <option key={r} value={r}>{r}</option>)}</select></div>
+                               <div><label className="text-xs font-bold block mb-1 text-gray-700">Division</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.division} onChange={e => handleRegChange('division', e.target.value)}><option value="" disabled>Select Division</option>{Object.keys(ORGANIZATIONAL_STRUCTURE).map(d => <option key={d} value={d}>{d}</option>)}</select></div>
                                {regData.division && (ORGANIZATIONAL_STRUCTURE[regData.division]||[]).length > 0 && (
-                                   <div className="animate-fadeIn"><label className="text-xs font-bold block mb-1 text-gray-700">Department/Section</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-gray-900 focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.departmentOrSection} onChange={e => handleRegChange('departmentOrSection', e.target.value)}><option value="" disabled>Select Dept</option>{(ORGANIZATIONAL_STRUCTURE[regData.division] || []).map(d => <option key={d} value={d}>{d}</option>)}</select></div>
+                                   <div className="animate-fadeIn"><label className="text-xs font-bold block mb-1 text-gray-700">Department/Section</label><select required className="w-full p-2 border border-gray-300 rounded text-sm bg-white text-black focus:ring-2 focus:ring-osmak-green focus:border-osmak-green disabled:bg-gray-100" value={regData.departmentOrSection} onChange={e => handleRegChange('departmentOrSection', e.target.value)}><option value="" disabled>Select Dept</option>{(ORGANIZATIONAL_STRUCTURE[regData.division] || []).map(d => <option key={d} value={d}>{d}</option>)}</select></div>
                                )}
                            </fieldset>
                            <button type="submit" disabled={isLoading} className="w-full py-3 bg-osmak-green text-white rounded-lg font-bold hover:bg-osmak-green-dark mt-4 shadow-md transition-colors disabled:opacity-70 flex items-center justify-center gap-2">

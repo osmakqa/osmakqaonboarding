@@ -26,6 +26,18 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
       }
+
+      /* Global Form Overrides as requested */
+      input, select, textarea {
+        background-color: white !important;
+        color: black !important;
+      }
+      
+      /* Ensure placeholder contrast */
+      ::placeholder {
+        color: #666 !important;
+        opacity: 1;
+      }
     </style>
     <script>
       tailwind.config = {
@@ -52,7 +64,9 @@
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
     "vite": "https://aistudiocdn.com/vite@^7.2.6",
     "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1",
-    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.44.1"
+    "firebase/app": "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js",
+    "firebase/firestore": "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js",
+    "firebase/": "https://esm.sh/firebase@^12.8.0/"
   }
 }
 </script>

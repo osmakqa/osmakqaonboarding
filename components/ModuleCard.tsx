@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Module, ModuleProgress } from '../types';
-import { PlayCircle, CheckCircle, Clock } from 'lucide-react';
+import { PlayCircle, CheckCircle } from 'lucide-react';
 import { PASSING_SCORE } from '../constants';
 
 interface ModuleCardProps {
@@ -58,10 +57,7 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ module, progress, onStart }) =>
         </p>
         
         <div className="flex items-center text-xs text-gray-500 mt-auto pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-1">
-            <Clock size={14} />
-            {module.duration}
-          </div>
+          {/* Duration removed as per request */}
         </div>
 
         {!isCompleted ? (

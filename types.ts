@@ -1,5 +1,3 @@
-
-
 export interface Question {
   id: string;
   text: string;
@@ -13,7 +11,7 @@ export interface Module {
   title: string;
   description: string;
   thumbnailUrl: string;
-  duration: string; // e.g., "15 min"
+  duration?: string; // Optional duration
   topics: string[]; // For Gemini context
   videoUrl?: string;
   questions?: Question[];
@@ -23,6 +21,7 @@ export interface ModuleProgress {
   isUnlocked: boolean;
   isCompleted: boolean;
   highScore: number; // Percentage 0-100
+  lastAttemptAnswers?: Record<string, number>; // questionId -> selectedOptionIndex
 }
 
 export type UserRole = 
@@ -45,7 +44,8 @@ export enum AppView {
   DASHBOARD = 'DASHBOARD',
   PLAYER = 'PLAYER',
   QUIZ = 'QUIZ',
-  ADMIN_DASHBOARD = 'ADMIN_DASHBOARD'
+  ADMIN_DASHBOARD = 'ADMIN_DASHBOARD',
+  COURSE_MANAGER = 'COURSE_MANAGER'
 }
 
 export interface RegistrationData {

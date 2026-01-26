@@ -4,7 +4,7 @@ import { Check, X, ArrowRight, RotateCcw, AlertCircle } from 'lucide-react';
 
 interface QuizProps {
   questions: Question[];
-  onComplete: (scorePercentage: number) => void;
+  onComplete: (scorePercentage: number, answers: Record<string, number>) => void;
   onRetake: () => void;
 }
 
@@ -14,6 +14,7 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete, onRetake }) => {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
+  const [answersHistory, setAnswersHistory] = useState<Record<string, number>>({});
 
   // Safety check if questions are missing or empty
   if (!questions || questions.length === 0) {
@@ -51,6 +52,13 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete, onRetake }) => {
     if (isCorrect) {
       setScore(prev => prev + 1);
     }
+
+    // Save current answer to history
+    setAnswersHistory(prev => ({
+      ...prev,
+      [currentQuestion.id]: selectedOption
+    }));
+
     setIsAnswered(true);
   };
 
@@ -61,13 +69,12 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete, onRetake }) => {
       setIsAnswered(false);
     } else {
       setShowResult(true);
-      // Wait for user to see the result screen
     }
   };
 
   const handleFinish = () => {
      const finalScore = Math.round((score / questions.length) * 100);
-     onComplete(finalScore);
+     onComplete(finalScore, answersHistory);
   };
 
   if (showResult) {

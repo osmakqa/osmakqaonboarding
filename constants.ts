@@ -1,5 +1,3 @@
-
-
 import { Module, OrganizationalStructure } from './types';
 
 export const PASSING_SCORE = 90;
@@ -80,7 +78,6 @@ export const MODULES: Module[] = [
     title: "Patient's Rights and Obligations",
     description: "Understanding the fundamental rights of patients and their corresponding responsibilities within the healthcare facility to ensure mutual respect and quality care.",
     thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1682089159103-d09b46d1cce8?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
-    duration: '8 min',
     topics: ['Patient Rights', 'Consent', 'Privacy', 'Patient Responsibilities'],
     videoUrl: 'https://drive.google.com/file/d/1TVls_xjsGhdOhwtB_pT8IV32zTkGip1U/view?usp=sharing',
     questions: [
@@ -202,7 +199,6 @@ export const MODULES: Module[] = [
     title: 'Data Privacy in Healthcare',
     description: 'An overview of the Data Privacy Act of 2012 (Republic Act No. 10173) and its critical role in protecting patient information within the healthcare setting.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80',
-    duration: '7 min',
     topics: ['Data Privacy Act', 'Republic Act No. 10173', 'National Privacy Commission (NPC)', 'Personal Information'],
     videoUrl: 'https://drive.google.com/file/d/1vUDby-oS6CDyFfGhrLvDiEjvkQ2vJCT_/view?usp=drive_link',
     questions: [
@@ -271,7 +267,6 @@ export const MODULES: Module[] = [
     title: 'Hand Hygiene Practices',
     description: 'Guidelines and protocols for minimizing the risk of spreading infections within the hospital environment. Includes hand hygiene, PPE usage, and isolation precautions.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?q=80&w=3870&?auto=format&fit=crop&w=800&q=80',
-    duration: '5 min',
     topics: ['Hand Hygiene', 'PPE', 'Isolation Protocols', 'Waste Disposal'],
     // Google Drive Link
     videoUrl: 'https://drive.google.com/file/d/1WlzIqgb8zGUQ3cCS9aKlz7jf3UGflmIa/view?usp=sharing',
@@ -394,7 +389,6 @@ export const MODULES: Module[] = [
     title: 'Standard and Isolation Precautions',
     description: 'Comprehensive guide on standard precautions for all patient care and specific isolation protocols (Contact, Droplet, Airborne) to prevent transmission of infectious agents.',
     thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1681995326134-cdc947934015?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
-    duration: '12 min',
     topics: ['Standard Precautions', 'Transmission-Based Precautions', 'PPE Selection'],
     // Google Drive Link
     videoUrl: 'https://drive.google.com/file/d/1pqynS_gOoSAxEfVx82103piBBlMepYhV/view?usp=sharing',
@@ -517,7 +511,6 @@ export const MODULES: Module[] = [
     title: 'Safe Injection Practices',
     description: 'Essential protocols for injection safety, including the "One Needle, One Syringe, Only One Time" rule, medication preparation, and proper sharps disposal.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1607326207820-989c6d53a0a2?q=80&w=3500&auto=format&fit=crop&w=800&q=8',
-    duration: '6 min',
     topics: ['Injection Safety', 'Sharps Disposal', 'Aseptic Technique'],
     videoUrl: 'https://drive.google.com/file/d/1afg1XhiClidWjklgJulX40aD3ia4CO30/view?usp=sharing',
     questions: [
@@ -639,7 +632,6 @@ export const MODULES: Module[] = [
     title: 'Personal Protective Equipment',
     description: 'Proper selection, donning, and doffing techniques for Personal Protective Equipment (PPE) to ensure healthcare worker and patient safety.',
     thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1676325102985-e0ddd75244f0?q=80&w=3870&auto=format&fit=crop&w=800&q=8',
-    duration: '9 min',
     topics: ['PPE Selection', 'Donning and Doffing', 'Hazard Protection'],
     videoUrl: 'https://drive.google.com/file/d/1NYQcoZZNnUnLF23vC73ui_WDHCyYp9vB/view?usp=sharing',
     questions: [
@@ -761,7 +753,6 @@ export const MODULES: Module[] = [
     title: 'Cleaning, Disinfection, and Sterilization',
     description: 'Best practices for cleaning, disinfecting, and sterilizing medical equipment and environmental surfaces to prevent healthcare-associated infections.',
     thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1661507189943-b87c6ea3589e?q=80&w=3870&uto=format&fit=crop&w=800&q=8',
-    duration: '10 min',
     topics: ['Spaulding Classification', 'Disinfection Levels', 'Sterilization Methods', 'Environmental Cleaning'],
     videoUrl: 'https://drive.google.com/file/d/10rc_b-gN7iYTVmKLDBFaM9rbfPmRL9Cl/view?usp=sharing',
   },
@@ -771,7 +762,6 @@ export const MODULES: Module[] = [
     title: 'Healthcare Waste Management',
     description: 'Guidelines on waste segregation, color coding, and disposal protocols to handle hazardous and non-hazardous hospital waste safely.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1763100351709-77023f1db28d?q=80&w=2670&auto=format&fit=crop&w=800&q=80',
-    duration: '10 min',
     topics: ['Waste Segregation', 'Color Coding', 'Hazardous Waste', 'Sharps Disposal'],
     videoUrl: 'https://drive.google.com/file/d/1Lg1IZW4c1GYfrZ8cF9dw-hXA_W5Zwkb8/view?usp=drive_link',
     questions: [
@@ -893,9 +883,8 @@ export const MODULES: Module[] = [
     id: 'm_ps_1',
     section: 'C. Patient Safety and Risk Management',
     title: 'Risk and Opportunities Management',
-    description: 'Identifying, assessing, and mitigating clinical and non-clinical risks to improve patient safety outcomes and organizational resilience.',
+    description: "Identifying, assessing, and mitigating clinical and non-clinical risks to improve patient safety outcomes and organizational resilience.",
     thumbnailUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80',
-    duration: '11 min',
     topics: ['Risk Assessment', 'Incident Reporting', 'Mitigation Strategies'],
     videoUrl: 'https://drive.google.com/file/d/1tTvmBPBM5w4NKowf6EN5oxNPgrjaDQvl/view?usp=sharing',
     questions: [
@@ -1017,7 +1006,6 @@ export const MODULES: Module[] = [
     title: 'International Patient Safety Goals',
     description: 'Overview of the IPSG standards designed to promote specific improvements in patient safety, highlighting problematic areas in health care.',
     thumbnailUrl: 'https://plus.unsplash.com/premium_photo-1665203568927-bf0e58ee3d20?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
-    duration: '15 min',
     topics: ['IPSG 1-6', 'Patient Identification', 'Communication', 'Medication Safety'],
     videoUrl: 'https://drive.google.com/file/d/1APNQ1jJdSNHwnZjE4Qr5KHdvzrVuG5Ao/view?usp=sharing',
     questions: [
@@ -1128,7 +1116,6 @@ export const MODULES: Module[] = [
     title: 'High-Alert Medications',
     description: 'Protocols for the safe storage, prescribing, and administration of high-alert medications to prevent serious patient harm.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&q=80',
-    duration: '10 min',
     topics: ['High-Alert Medications', 'Medication Safety', 'Storage Protocols'],
     videoUrl: 'https://drive.google.com/file/d/18irpemN_A9wZuY-_2VMceHyZkCsg83fy/view?usp=drive_link',
     questions: [
@@ -1250,7 +1237,6 @@ export const MODULES: Module[] = [
     title: 'Pediatric Fall Prevention and Management',
     description: 'Guidelines for preventing and managing falls in pediatric patients using the Humpty Dumpty Scale and proper risk assessment protocols.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1708687044998-35e1afa39c58?q=80&w=2670&auto=format&fit=crop&w=800&q=80',
-    duration: '10 min',
     topics: ['Humpty Dumpty Scale', 'Fall Risk Assessment', 'Pediatric Safety', 'Risk Management'],
     videoUrl: 'https://drive.google.com/file/d/1ivBR_H4D_agJTqITZ8A_GrgmPSaIcFi0/view?usp=drive_link',
     questions: [
@@ -1372,7 +1358,6 @@ export const MODULES: Module[] = [
     title: 'Adult Fall Prevention and Management',
     description: 'Guidelines for preventing and managing falls in adult patients using the Modified Morse Fall Risk Assessment tool.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1620790647593-b3a6916c7d60?q=80&w=2574&auto=format&fit=crop&w=800&q=80',
-    duration: '10 min',
     topics: ['Modified Morse Scale', 'Fall Risk Assessment', 'Adult Safety', 'Risk Management'],
     videoUrl: 'https://drive.google.com/file/d/1m3eSq_BxMktFtz4fD90aAIfmRUgCN7mU/view?usp=sharing',
     questions: [
@@ -1411,7 +1396,7 @@ export const MODULES: Module[] = [
       },
       {
         id: 'q_m_ps_adult_4',
-        text: 'According to the Modified Morse Fall Scale, what is the required score if an adult patient has an immediate history of falls within the current admission or the last three months?',
+        text: 'According to the Modified Morse Fall Scale, what is the required score if an. adult patient has an immediate history of falls within the current admission or the last three months?',
         options: [
           'Score 0.',
           'Score 15.',
@@ -1494,7 +1479,6 @@ export const MODULES: Module[] = [
     title: 'Error Prone Abbreviation',
     description: 'Guidelines on avoiding dangerous abbreviations in medical documentation to prevent medication errors and misinterpretations.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1758691461990-03b49d969495?q=80&w=3732&auto=format&fit=crop&w=800&q=80',
-    duration: '8 min',
     topics: ['Medical Abbreviations', 'Documentation Safety', 'Medication Errors'],
     videoUrl: 'https://drive.google.com/file/d/1F286B7XrGEgI7nW14F7TYgY_G_tpWe6z/view?usp=drive_link',
     questions: [
@@ -1607,7 +1591,6 @@ export const MODULES: Module[] = [
     title: 'ISO 9001 Standards',
     description: 'An introduction to the ISO 9001:2015 Quality Management System, focusing on customer satisfaction, process approach, and continuous improvement in healthcare.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
-    duration: '12 min',
     topics: ['ISO 9001:2015', 'Quality Management', 'Continuous Improvement', 'PDCA Cycle'],
     videoUrl: 'https://www.youtube.com/watch?v=JpM2w546dAQ', // Generic educational placeholder
     questions: [
@@ -1649,7 +1632,6 @@ export const MODULES: Module[] = [
     title: 'Root Cause Analysis',
     description: 'Techniques for identifying the underlying causes of problems or incidents to prevent recurrence, including the 5 Whys and Fishbone Diagram.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
-    duration: '10 min',
     topics: ['Root Cause Analysis', '5 Whys', 'Fishbone Diagram', 'Problem Solving'],
     videoUrl: 'https://drive.google.com/file/d/1_9Gc1IdsRcvaGjCHFPaptBopVOWcGLa-/view?usp=drive_link',
     questions: [
@@ -1717,7 +1699,6 @@ export const MODULES: Module[] = [
     title: 'Corrective Action Requests',
     description: 'The process of documenting, investigating, and resolving non-conformities through the formal Corrective Action Request (CAR) system.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
-    duration: '9 min',
     topics: ['Non-conformity', 'CAR Process', 'Verification', 'Closure'],
     videoUrl: 'https://drive.google.com/file/d/1TgY5Ncvj11HE1movNpq_lQyJRVI5yPcg/view?usp=drive_link',
     questions: [
@@ -1841,7 +1822,6 @@ export const MODULES: Module[] = [
     title: 'VAP Bundle',
     description: 'Evidence-based practices to prevent Ventilator-Associated Pneumonia, including head-of-bed elevation, oral care, and sedation management.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1516574187841-69301976e499?q=80&w=3870&auto=format&fit=crop&w=800&q=80',
-    duration: '10 min',
     topics: ['Ventilator-Associated Pneumonia', 'Oral Care', 'Sedation Vacation', 'Head of Bed'],
     videoUrl: 'https://www.youtube.com/watch?v=Fj2FqKjRz1I', // Generic educational placeholder
     questions: [
@@ -1883,7 +1863,6 @@ export const MODULES: Module[] = [
     title: 'CAUTI Bundle',
     description: 'Protocols for preventing Catheter-Associated Urinary Tract Infections, focusing on aseptic insertion and timely removal.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=3880&auto=format&fit=crop&w=800&q=80',
-    duration: '8 min',
     topics: ['CAUTI', 'Aseptic Insertion', 'Catheter Maintenance', 'Timely Removal'],
     videoUrl: 'https://www.youtube.com/watch?v=5y2sQx8u4yI', // Generic educational placeholder
     questions: [
@@ -1925,7 +1904,6 @@ export const MODULES: Module[] = [
     title: 'CLABSI Bundle',
     description: 'Best practices for Central Line-Associated Bloodstream Infection prevention, including maximal barrier precautions and site care.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1631815588090-d4bfec5b1b98?q=80&w=3774&auto=format&fit=crop&w=800&q=80',
-    duration: '10 min',
     topics: ['CLABSI', 'Central Line', 'Maximal Barrier Precautions', 'Chlorhexidine'],
     videoUrl: 'https://www.youtube.com/watch?v=M2T22rB3fA4', // Generic educational placeholder
     questions: [

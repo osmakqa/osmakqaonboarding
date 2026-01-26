@@ -1,55 +1,17 @@
-
-import { GoogleGenAI, Type, Schema } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { Question, Module } from '../types';
 import { FALLBACK_QUESTIONS } from '../constants';
 
-// Safely access API key, handling both Vite (import.meta.env) and Node/Process environments
-// This prevents "ReferenceError: process is not defined" crashes in browsers
-const getApiKey = () => {
-  try {
-    // Check for Vite env
-    // Cast to any to fix TS error: Property 'env' does not exist on type 'ImportMeta'
-    const meta = import.meta as any;
-    if (typeof meta !== 'undefined' && meta.env && meta.env.VITE_API_KEY) {
-      return meta.env.VITE_API_KEY;
-    }
-    // Check for process.env (Node/System)
-    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-      return process.env.API_KEY;
-    }
-  } catch (e) {
-    // Ignore errors during access
-  }
-  return undefined;
-};
-
-const apiKey = getApiKey();
-
-// Define the response schema for the quiz
-const quizSchema: Schema = {
-  type: Type.ARRAY,
-  items: {
-    type: Type.OBJECT,
-    properties: {
-      id: { type: Type.STRING },
-      text: { type: Type.STRING, description: "The question text" },
-      options: { 
-        type: Type.ARRAY, 
-        items: { type: Type.STRING },
-        description: "A list of 4 possible answers"
-      },
-      correctAnswerIndex: { 
-        type: Type.INTEGER, 
-        description: "The index (0-3) of the correct answer in the options array" 
-      }
-    },
-    required: ["id", "text", "options", "correctAnswerIndex"]
-  }
-};
-
+/**
+ * Generates a quiz for a training module using Google Gemini.
+ * Adheres strictly to @google/genai guidelines.
+ */
 export const generateQuizForModule = async (module: Module): Promise<Question[]> => {
+  // Directly assume process.env.API_KEY is available as per requirements
+  const apiKey = process.env.API_KEY;
+
   if (!apiKey) {
-    console.warn("No API Key found. Using fallback questions.");
+    console.warn("No API Key found in environment. Using fallback questions.");
     return FALLBACK_QUESTIONS;
   }
 
@@ -67,28 +29,50 @@ export const generateQuizForModule = async (module: Module): Promise<Question[]>
       Ensure there is exactly one correct answer per question.
     `;
 
+    // Using gemini-3-pro-preview for complex reasoning tasks like quiz generation
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-pro-preview',
       contents: prompt,
       config: {
         responseMimeType: "application/json",
-        responseSchema: quizSchema,
-        temperature: 0.3, // Low temperature for factual accuracy
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              id: { type: Type.STRING },
+              text: { type: Type.STRING, description: "The question text" },
+              options: { 
+                type: Type.ARRAY, 
+                items: { type: Type.STRING },
+                description: "A list of 4 possible answers"
+              },
+              correctAnswerIndex: { 
+                type: Type.INTEGER, 
+                description: "The index (0-3) of the correct answer in the options array" 
+              }
+            },
+            propertyOrdering: ["id", "text", "options", "correctAnswerIndex"],
+            required: ["id", "text", "options", "correctAnswerIndex"]
+          }
+        },
+        temperature: 0.3,
       }
     });
 
-    if (response.text) {
-      const parsed = JSON.parse(response.text);
+    // Directly access .text property as per guidelines
+    const responseText = response.text;
+    if (responseText) {
+      const parsed = JSON.parse(responseText.trim());
       if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed as Question[];
       }
-      console.warn("Gemini returned valid JSON but not an array of questions.");
     }
 
-    throw new Error("No content generated");
+    throw new Error("Invalid or empty response from Gemini");
 
-  } catch (error) {
-    console.error("Failed to generate quiz with Gemini:", error);
+  } catch (error: any) {
+    console.error("Failed to generate quiz with Gemini:", error?.message || error);
     return FALLBACK_QUESTIONS;
   }
 };

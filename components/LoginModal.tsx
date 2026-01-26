@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { UserRole, RegistrationData, UserProfile } from '../types';
 import { LogIn, UserPlus, ArrowLeft, Check, Hash, ShieldAlert, Loader2, AlertTriangle, Users, User } from 'lucide-react';
@@ -191,7 +189,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                   value={loginLastName}
                   onChange={(e) => setLoginLastName(e.target.value)}
                   placeholder="Enter Last Name"
-                  className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-gray-50 text-gray-900"
+                  className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-white text-black"
                 />
               </div>
 
@@ -206,7 +204,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                   value={loginHospitalNumber}
                   onChange={(e) => setLoginHospitalNumber(e.target.value)}
                   placeholder="e.g. 123456"
-                  className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-gray-50 text-gray-900"
+                  className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-white text-black"
                 />
               </div>
 
@@ -225,7 +223,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                 <select
                   value={loginRole}
                   onChange={(e) => setLoginRole(e.target.value)}
-                  className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-gray-50 text-gray-900"
+                  className="block w-full px-4 py-3 text-sm border-gray-300 focus:ring-osmak-green focus:border-osmak-green rounded-lg border bg-white text-black"
                 >
                     <option value="">-- Select Role (Guest Access) --</option>
                     {REGISTRATION_ROLES.map(role => (
@@ -314,7 +312,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                 <label className="block text-xs font-bold text-gray-700 mb-1">First Name</label>
                 <input 
                   type="text" 
-                  className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white transition-colors border-gray-300 disabled:bg-gray-100"
+                  className="w-full p-2 border rounded text-sm bg-white text-black focus:ring-osmak-green focus:border-osmak-green transition-colors border-gray-300 disabled:bg-gray-100"
                   value={regData.firstName}
                   onChange={e => handleRegChange('firstName', e.target.value)}
                 />
@@ -323,7 +321,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                  <label className="block text-xs font-bold text-gray-700 mb-1">Last Name</label>
                  <input 
                     type="text" 
-                    className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white transition-colors border-gray-300 disabled:bg-gray-100"
+                    className="w-full p-2 border rounded text-sm bg-white text-black focus:ring-osmak-green focus:border-osmak-green transition-colors border-gray-300 disabled:bg-gray-100"
                     value={regData.lastName}
                     onChange={e => handleRegChange('lastName', e.target.value)}
                  />
@@ -335,7 +333,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                  <input 
                     type="text" 
                     maxLength={2} 
-                    className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white transition-colors border-gray-300 disabled:bg-gray-100"
+                    className="w-full p-2 border rounded text-sm bg-white text-black focus:ring-osmak-green focus:border-osmak-green transition-colors border-gray-300 disabled:bg-gray-100"
                     value={regData.middleInitial}
                     onChange={e => handleRegChange('middleInitial', e.target.value)}
                  />
@@ -344,7 +342,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                  <label className="block text-xs font-bold text-gray-700 mb-1">Birthday</label>
                  <input 
                     type="date" 
-                    className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white transition-colors border-gray-300 disabled:bg-gray-100"
+                    className="w-full p-2 border rounded text-sm bg-white text-black focus:ring-osmak-green focus:border-osmak-green transition-colors border-gray-300 disabled:bg-gray-100"
                     value={regData.birthday}
                     onChange={e => handleRegChange('birthday', e.target.value)}
                  />
@@ -357,7 +355,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                  <input 
                     type="text" 
                     placeholder="This will be your password"
-                    className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white transition-colors border-gray-300 disabled:bg-gray-100"
+                    className="w-full p-2 border rounded text-sm bg-white text-black focus:ring-osmak-green focus:border-osmak-green transition-colors border-gray-300 disabled:bg-gray-100"
                     value={regData.hospitalNumber}
                     onChange={e => handleRegChange('hospitalNumber', e.target.value)}
                  />
@@ -366,7 +364,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                  <label className="block text-xs font-bold text-gray-700 mb-1">Plantilla Position</label>
                  <input 
                     type="text" 
-                    className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white transition-colors border-gray-300 disabled:bg-gray-100"
+                    className="w-full p-2 border rounded text-sm bg-white text-black focus:ring-osmak-green focus:border-osmak-green transition-colors border-gray-300 disabled:bg-gray-100"
                     value={regData.plantillaPosition}
                     onChange={e => handleRegChange('plantillaPosition', e.target.value)}
                  />
@@ -377,7 +375,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
             <div>
                <label className="block text-xs font-bold text-gray-700 mb-1">Role</label>
                <select 
-                  className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white transition-colors border-gray-300 disabled:bg-gray-100"
+                  className="w-full p-2 border rounded text-sm bg-white text-black focus:ring-osmak-green focus:border-osmak-green transition-colors border-gray-300 disabled:bg-gray-100"
                   value={regData.role}
                   onChange={e => handleRegChange('role', e.target.value)}
                >
@@ -390,7 +388,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
             <div>
                <label className="block text-xs font-bold text-gray-700 mb-1">Division</label>
                <select 
-                  className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white transition-colors border-gray-300 disabled:bg-gray-100"
+                  className="w-full p-2 border rounded text-sm bg-white text-black focus:ring-osmak-green focus:border-osmak-green transition-colors border-gray-300 disabled:bg-gray-100"
                   value={regData.division}
                   onChange={e => handleRegChange('division', e.target.value)}
                >
@@ -406,7 +404,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ users, onLogin, onRegister, isL
                <div className="animate-fadeIn">
                   <label className="block text-xs font-bold text-gray-700 mb-1">Department / Section</label>
                   <select 
-                     className="w-full p-2 border rounded text-sm bg-gray-50 focus:bg-white transition-colors border-gray-300 disabled:bg-gray-100"
+                     className="w-full p-2 border rounded text-sm bg-white text-black focus:ring-osmak-green focus:border-osmak-green transition-colors border-gray-300 disabled:bg-gray-100"
                      value={regData.departmentOrSection}
                      onChange={e => handleRegChange('departmentOrSection', e.target.value)}
                   >

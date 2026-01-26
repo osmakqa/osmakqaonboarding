@@ -7,7 +7,7 @@ import { Loader2, ArrowLeft, Play, AlertCircle, FileText } from 'lucide-react';
 interface PlayerProps {
   module: Module;
   onExit: () => void;
-  onComplete: (score: number) => void;
+  onComplete: (score: number, answers: Record<string, number>) => void;
 }
 
 const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
@@ -22,45 +22,35 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
   // Construct a robust embed URL
   const getSafeEmbedUrl = (url: string) => {
     try {
-      // Handle Google Drive links
+      // 1. Handle Google Drive links
       if (url.includes('drive.google.com')) {
-        // Convert /view or /view?usp=sharing to /preview for embedding
         return url.replace(/\/view.*$/, '/preview');
       }
 
-      // Handle YouTube links
-      if (url.includes('youtu.be/') || url.includes('youtube.com')) {
-        let embedUrl = url;
-
-        // Convert youtu.be shortened links to embed format
-        if (url.includes('youtu.be/')) {
-          const id = url.split('youtu.be/')[1].split('?')[0];
-          embedUrl = `https://www.youtube.com/embed/${id}`;
-        } 
-        // Convert standard watch links to embed format
-        else if (url.includes('youtube.com/watch')) {
-          try {
-            const urlObj = new URL(url);
-            const id = urlObj.searchParams.get('v');
-            if (id) embedUrl = `https://www.youtube.com/embed/${id}`;
-          } catch (e) {
-            // Fallback simple parse if URL fails
-            const id = url.split('v=')[1]?.split('&')[0];
-            if (id) embedUrl = `https://www.youtube.com/embed/${id}`;
-          }
-        }
-
-        const separator = embedUrl.includes('?') ? '&' : '?';
-        // origin is crucial for avoiding playback errors in some environments
-        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      // 2. Handle YouTube links with Robust Regex
+      const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+      const match = url.match(youtubeRegex);
+      
+      if (match && match[1]) {
+        const videoId = match[1];
         
-        // enablejsapi=1 and origin are key for fixing Error 153 for YouTube
-        return `${embedUrl}${separator}enablejsapi=1&rel=0&modestbranding=1&playsinline=1&origin=${encodeURIComponent(origin)}`;
+        // Simplified parameters to avoid Error 153 (Origin/JSAPI issues)
+        // We remove 'origin' and 'enablejsapi' as they often cause issues in sandboxed environments
+        const params = new URLSearchParams({
+          'rel': '0',
+          'modestbranding': '1',
+          'playsinline': '1',
+          'autoplay': '1',
+          'mute': '0' // Browsers might block unmuted autoplay, but users usually expect sound in training
+        });
+        
+        return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
       }
 
-      // Return original for other types
+      // 3. Fallback for other direct video links
       return url;
     } catch (e) {
+      console.error("URL Parsing Error:", e);
       return url;
     }
   };
@@ -90,7 +80,6 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
       setQuizQuestions([]);
       setQuizReady(false);
       
-      // If module has hardcoded questions, use them
       if (module.questions && module.questions.length > 0) {
         setQuizQuestions(module.questions);
         setQuizReady(true);
@@ -98,7 +87,6 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
         return;
       }
 
-      // Otherwise generate using Gemini
       try {
         const questions = await generateQuizForModule(module);
         if (questions && questions.length > 0) {
@@ -168,7 +156,7 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
             <span className="text-sm font-medium">Back to Dashboard</span>
           </button>
         </div>
-        <span className="font-semibold text-sm opacity-90 drop-shadow-md">{module.title}</span>
+        <span className="font-semibold text-sm opacity-90 drop-shadow-md text-right flex-1 ml-4 truncate">{module.title}</span>
       </div>
 
       {/* Video Area */}
@@ -176,17 +164,19 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
         {module.videoUrl ? (
           <div className="w-full h-full pb-20">
              <iframe 
+                key={module.id}
                 src={getSafeEmbedUrl(module.videoUrl)} 
                 className="w-full h-full border-none"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
-                referrerPolicy="strict-origin-when-cross-origin"
+                referrerPolicy="no-referrer-when-downgrade"
+                sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-presentation"
                 frameBorder={0}
                 title={module.title}
              />
           </div>
         ) : (
-          /* Simulation Mode for modules with no videoUrl */
+          /* Simulation Mode */
           <>
             {videoProgress < 100 ? (
                 <>
@@ -199,8 +189,6 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
                             Video content simulation for {module.title}
                         </p>
                     </div>
-                    
-                    {/* Debug Control */}
                     <button 
                         onClick={handleVideoFinish}
                         className="absolute bottom-32 bg-white/10 hover:bg-white/20 px-4 py-2 rounded text-xs border border-white/20 backdrop-blur-sm"
@@ -221,7 +209,6 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
       {/* Controls Bar */}
       <div className="bg-gray-900 p-4 border-t border-gray-800 absolute bottom-0 w-full z-20">
         {!module.videoUrl ? (
-          /* Simulation Controls */
           <>
             {videoProgress >= 100 ? (
                  <button 
@@ -248,7 +235,6 @@ const Player: React.FC<PlayerProps> = ({ module, onExit, onComplete }) => {
             )}
           </>
         ) : (
-          /* Real Video Controls */
           <div className="flex justify-end items-center">
               <button 
                 onClick={() => setShowQuiz(true)}

@@ -1,20 +1,19 @@
-
-
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
 import ModuleCard from './components/ModuleCard';
 import Player from './components/Player';
 import LoginModal from './components/LoginModal';
 import AdminDashboard from './components/AdminDashboard';
+import CourseManager from './components/CourseManager';
 import { MODULES, PASSING_SCORE } from './constants';
 import { Module, UserState, ModuleProgress, AppView, UserRole, UserProfile, RegistrationData } from './types';
 import { dataService } from './services/dataService';
 import { 
   Trophy, Activity, Star, Users, LayoutDashboard, Eye, Award, X, Download, Loader2,
-  ShieldCheck, HeartPulse, FileText, Microscope, Syringe, CheckCircle2
+  ShieldCheck, HeartPulse, FileText, Microscope, Syringe, BookOpen
 } from 'lucide-react';
 
-// --- SEED DATA for Demo (Initial Fallback if DB is empty, logic can be removed if strictly using DB) ---
+// --- SEED DATA for Demo ---
 const INITIAL_PROGRESS_TEMPLATE: Record<string, ModuleProgress> = {};
 MODULES.forEach((m) => {
   INITIAL_PROGRESS_TEMPLATE[m.id] = {
@@ -30,6 +29,9 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   
+  // State for dynamic modules management
+  const [modules, setModules] = useState<Module[]>(MODULES);
+  
   // State to handle Admin's preview role
   const [adminPreviewRole, setAdminPreviewRole] = useState<string>('All');
 
@@ -40,7 +42,6 @@ function App() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   
-  // Separate loading state for registration to prevent UI unmounting
   const [isRegistering, setIsRegistering] = useState(false);
 
   // Load users from Supabase on mount
@@ -60,9 +61,6 @@ function App() {
     }
   };
 
-  // --- Helper: Get Current User's Progress ---
-  // We use the 'users' array as the source of truth, but we keep a reference to 'currentUser'
-  // to know WHO is logged in. When updating progress, we update 'users' and then sync 'currentUser'.
   const currentUserProgress = useMemo(() => {
     if (!currentUser) return INITIAL_PROGRESS_TEMPLATE;
     const found = users.find(u => u.hospitalNumber === currentUser.hospitalNumber);
@@ -73,49 +71,37 @@ function App() {
   const filteredModules = useMemo(() => {
     if (!currentUser) return [];
     
-    // Determine the effective role for filtering
     let effectiveRole = currentUser.role;
-    
-    // If Admin is in preview mode, override the role
     if (currentUser.role === 'QA Admin' && adminPreviewRole !== 'All') {
         effectiveRole = adminPreviewRole as UserRole;
     }
 
-    // QA Admin (All) and Head / Assistant Head see everything
     if (effectiveRole === 'QA Admin' || effectiveRole === 'Head / Assistant Head') {
-      return MODULES;
+      return modules;
     }
 
-    return MODULES.filter(m => {
-      // Data privacy module is for everyone
+    return modules.filter(m => {
       if (m.id === 'm_qa_dataprivacy') return true;
 
-      // 1. Doctors, Nurse, Nurse (High-risk Area), Other Clinical (Med Tech, Rad Tech, etc)
       if (['Doctor', 'Nurse', 'Nurse (High-risk Area)', 'Other Clinical (Med Tech, Rad Tech, etc)'].includes(effectiveRole as string)) {
-        // Remove Section D and E for these roles
         if (m.section === 'D. Quality Management System' || m.section === 'E. Advanced Infection Prevention and Control') {
           return false;
         }
-        // General IPC modules: Hand Hygiene, Standard & Isolation, PPE, Waste Management
         if (effectiveRole === 'Other Clinical (Med Tech, Rad Tech, etc)' && ['m1', 'm2', 'm_ipc_ppe', 'm_ipc_waste'].includes(m.id)) {
             return true;
         }
-        // Patient Safety modules: IPSG, Error Prone Abbrev
         if (effectiveRole === 'Other Clinical (Med Tech, Rad Tech, etc)' && ['m_ps_2', 'm_ps_error_abbrev'].includes(m.id)) {
             return true;
         }
-        return m.id !== 'm_ps_1'; // All doctors/nurses/other clinical see all except Risk & Opp (QMS) and sections D/E
+        return m.id !== 'm_ps_1';
       }
       
-      // 2. Non-Clinical
       if (effectiveRole === 'Non-clinical') {
-        if (m.id === 'm_qa_1' || m.id === 'm1') return true; // Patient Rights, Hand Hygiene
+        if (m.id === 'm_qa_1' || m.id === 'm1') return true;
         return false;
       }
       
-      // 3. Medical Intern
       if (effectiveRole === 'Medical Intern') {
-        // Patient Rights, IPC (all of B), QMS (all of D), Adv IPC (all of E), IPSG, Pedia Fall, Adult Fall, Error Prone Abbrev, Waste Management
         if (m.id === 'm_qa_1') return true;
         if (m.section === 'B. Infection Prevention and Control') return true;
         if (m.section === 'D. Quality Management System') return true; 
@@ -124,16 +110,14 @@ function App() {
         if (m.id === 'm_ps_pedia_fall') return true;
         if (m.id === 'm_ps_adult_fall') return true;
         if (m.id === 'm_ps_error_abbrev') return true;
-        if (m.id === 'm_ipc_waste') return true; // Explicitly included if not covered by section B
+        if (m.id === 'm_ipc_waste') return true;
         return false;
       }
 
-      return false; // Fallback for roles without specific rules
+      return false;
     });
-  }, [currentUser, adminPreviewRole]);
+  }, [currentUser, adminPreviewRole, modules]);
 
-
-  // Group modules by section based on the FILTERED list
   const sections = useMemo(() => {
     const groups: Record<string, Module[]> = {};
     filteredModules.forEach(m => {
@@ -147,10 +131,8 @@ function App() {
 
   const sectionNames = useMemo(() => Object.keys(sections).sort(), [sections]);
 
-  // Tab State
   const [activeTab, setActiveTab] = useState<string>('');
 
-  // Reset tab when filters change to avoid empty views
   useEffect(() => {
     if (sectionNames.length > 0) {
       if (!activeTab || !sections[activeTab]) {
@@ -161,7 +143,6 @@ function App() {
     }
   }, [sectionNames, sections, activeTab]);
 
-  // Helper for Section Icons
   const getSectionIcon = (sectionName: string) => {
     if (sectionName.includes('Quality Assurance')) return <ShieldCheck size={18} />;
     if (sectionName.includes('Advanced')) return <Microscope size={18} />;
@@ -171,12 +152,9 @@ function App() {
     return <Activity size={18} />;
   };
 
-  // --- Actions ---
-
   const handleLogin = (role: UserRole, userProfile: UserProfile) => {
     setCurrentUser(userProfile);
     setIsLoggedIn(true);
-    // If Admin, go straight to Admin Dashboard
     if (role === 'QA Admin') {
         setView(AppView.ADMIN_DASHBOARD);
     } else {
@@ -185,15 +163,11 @@ function App() {
   };
 
   const handleRegister = async (data: RegistrationData) => {
-    // Use local registering state so we don't trigger the full page loader (which unmounts the modal)
     setIsRegistering(true);
-    
     try {
         const newUser = await dataService.registerUser(data);
-        
         if (newUser) {
             setUsers(prev => [...prev, newUser]);
-            // Auto login if it came from the LoginModal (not admin dashboard)
             if (!isLoggedIn && newUser.role) {
                 handleLogin(newUser.role as UserRole, newUser);
             }
@@ -206,15 +180,13 @@ function App() {
   };
 
   const handleUpdateUser = async (hospitalNumber: string, data: RegistrationData) => {
-    setIsRegistering(true); // Reuse loading state for updates
+    setIsRegistering(true);
     try {
         const updatedUser = await dataService.updateUser(hospitalNumber, data);
         if (updatedUser) {
-            // Update local state with the returned user from DB for consistency
             setUsers(prevUsers => prevUsers.map(u => 
                 u.hospitalNumber === hospitalNumber ? updatedUser : u
             ));
-            // If the currently logged-in user is the one being edited, update their state too
             if (currentUser?.hospitalNumber === hospitalNumber) {
                 setCurrentUser(updatedUser);
             }
@@ -229,10 +201,8 @@ function App() {
   const handleDeleteUser = async (hospitalNumber: string) => {
     const success = await dataService.deleteUser(hospitalNumber);
     if (success) {
-      // Optimistic update locally
       setUsers(prevUsers => prevUsers.filter(u => u.hospitalNumber !== hospitalNumber));
     }
-    // Error is handled via alerts in dataService, so no need for else block here.
   };
 
   const handleLogout = () => {
@@ -240,9 +210,9 @@ function App() {
     setCurrentUser(null);
     setView(AppView.DASHBOARD);
     setActiveModuleId(null);
-    setAdminPreviewRole('All'); // Reset preview
+    setAdminPreviewRole('All');
     setShowCertificate(false);
-    loadUsers(); // Refresh data on logout to ensure consistency
+    loadUsers();
   };
 
   const handleStartModule = (moduleId: string) => {
@@ -255,10 +225,9 @@ function App() {
     setView(AppView.DASHBOARD);
   };
 
-  const handleModuleCompletion = async (score: number) => {
+  const handleModuleCompletion = async (score: number, answers: Record<string, number>) => {
     if (!activeModuleId || !currentUser) return;
 
-    // Calculate new state logic
     const currentUserData = users.find(u => u.hospitalNumber === currentUser.hospitalNumber);
     if (!currentUserData) return;
 
@@ -268,10 +237,10 @@ function App() {
     const newModuleProgress: ModuleProgress = {
         ...currentModuleProgress,
         highScore: Math.max(currentModuleProgress.highScore, score),
-        isCompleted: currentModuleProgress.isCompleted || isPassed
+        isCompleted: currentModuleProgress.isCompleted || isPassed,
+        lastAttemptAnswers: answers // Store the actual responses
     };
 
-    // Optimistic Update locally
     setUsers(prevUsers => {
         return prevUsers.map(u => {
             if (u.hospitalNumber === currentUser.hospitalNumber) {
@@ -287,22 +256,31 @@ function App() {
         });
     });
 
-    // Update Supabase
     await dataService.updateUserProgress(currentUser.hospitalNumber, activeModuleId, newModuleProgress);
-
     handleExitPlayer();
   };
 
-  // Calculate stats based on VISIBLE modules for this user role
+  // --- Course Management Handlers ---
+  const handleAddModule = (newModule: Module) => {
+    setModules(prev => [...prev, newModule]);
+  };
+
+  const handleUpdateModule = (updatedModule: Module) => {
+    setModules(prev => prev.map(m => m.id === updatedModule.id ? updatedModule : m));
+  };
+
+  const handleDeleteModule = (moduleId: string) => {
+    setModules(prev => prev.filter(m => m.id !== moduleId));
+  };
+
   const visibleModuleIds = filteredModules.map(m => m.id);
   const completedCount = visibleModuleIds.filter(id => currentUserProgress[id]?.isCompleted).length;
   const totalVisibleModules = visibleModuleIds.length;
   const progressPercent = totalVisibleModules > 0 ? Math.round((completedCount / totalVisibleModules) * 100) : 0;
   const isAllCompleted = totalVisibleModules > 0 && completedCount === totalVisibleModules;
 
-  const activeModule = activeModuleId ? MODULES.find(m => m.id === activeModuleId) : null;
+  const activeModule = activeModuleId ? modules.find(m => m.id === activeModuleId) : null;
 
-  // Only show full page loader if we are loading initial data
   if (isLoadingUsers && !isLoggedIn && users.length === 0) {
       return (
           <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
@@ -336,7 +314,6 @@ function App() {
         onLogoClick={() => setView(currentUser?.role === 'QA Admin' ? AppView.ADMIN_DASHBOARD : AppView.DASHBOARD)}
       />
       
-      {/* QA Admin Toggle Bar */}
       {currentUser?.role === 'QA Admin' && (
           <div className="bg-gray-800 text-white px-6 py-2 flex flex-col md:flex-row gap-4 text-sm justify-between items-center shadow-inner">
               <div className="flex gap-4">
@@ -347,6 +324,12 @@ function App() {
                       <Users size={16} /> Employees
                   </button>
                   <button 
+                    onClick={() => setView(AppView.COURSE_MANAGER)}
+                    className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.COURSE_MANAGER ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}
+                  >
+                      <BookOpen size={16} /> Course Manager
+                  </button>
+                  <button 
                     onClick={() => setView(AppView.DASHBOARD)}
                     className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.DASHBOARD ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}
                   >
@@ -354,7 +337,6 @@ function App() {
                   </button>
               </div>
               
-              {/* Preview Role Filter - Only visible in Dashboard/Preview mode */}
               {view === AppView.DASHBOARD && (
                   <div className="flex items-center gap-2 bg-gray-700 p-1 pl-3 rounded border border-gray-600">
                       <span className="text-gray-300 text-xs font-bold uppercase flex items-center gap-1">
@@ -364,7 +346,7 @@ function App() {
                       <select 
                           value={adminPreviewRole}
                           onChange={(e) => setAdminPreviewRole(e.target.value)}
-                          className="bg-gray-800 text-white border-none rounded px-2 py-1 text-xs focus:ring-1 focus:ring-osmak-green outline-none cursor-pointer"
+                          className="bg-white text-black border-none rounded px-2 py-1 text-xs focus:ring-1 focus:ring-osmak-green outline-none cursor-pointer"
                       >
                           <option value="All">QA Admin (View All)</option>
                           <option value="Head / Assistant Head">Head / Assistant Head</option>
@@ -374,7 +356,6 @@ function App() {
                           <option value="Other Clinical (Med Tech, Rad Tech, etc)">Other Clinical (Med Tech, Rad Tech, etc)</option>
                           <option value="Medical Intern">Medical Intern</option>
                           <option value="Non-clinical">Non-clinical</option>
-                          {/* Removed 'Others' */}
                       </select>
                   </div>
               )}
@@ -399,10 +380,26 @@ function App() {
         </main>
       )}
 
+      {view === AppView.COURSE_MANAGER && currentUser?.role === 'QA Admin' && (
+        <main className="flex-1 max-w-7xl mx-auto w-full p-6 space-y-8 animate-fadeIn">
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold text-gray-900">Course Management</h1>
+                <div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 text-sm">
+                    <span className="text-gray-500">Total Modules:</span> <span className="font-bold text-gray-900">{modules.length}</span>
+                </div>
+            </div>
+            <CourseManager 
+                modules={modules}
+                onAddModule={handleAddModule}
+                onUpdateModule={handleUpdateModule}
+                onDeleteModule={handleDeleteModule}
+            />
+        </main>
+      )}
+
       {view === AppView.DASHBOARD && (
         <main className="flex-1 max-w-7xl mx-auto w-full p-6 space-y-6 animate-fadeIn">
             
-            {/* Completion Banner for Employees */}
             {isAllCompleted && currentUser?.role !== 'QA Admin' && (
                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
                    <div className="absolute top-0 right-0 p-4 opacity-10">
@@ -429,7 +426,6 @@ function App() {
                </div>
             )}
 
-            {/* Welcome / Progress Section */}
             <section className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
                 <div className="flex items-center gap-3 mb-1">
@@ -446,7 +442,6 @@ function App() {
                 </p>
               </div>
               
-              {/* Hide progress stats for Admin */}
               {currentUser?.role !== 'QA Admin' && (
                   <div className="flex items-center gap-6 bg-gray-50 px-6 py-3 rounded-lg border border-gray-100 shrink-0">
                      <div className="text-center">
@@ -468,7 +463,6 @@ function App() {
               )}
             </section>
 
-            {/* Compact Section Selector */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-3">
                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Course Sections</h3>
@@ -481,7 +475,6 @@ function App() {
                   const modulesInSection = sections[sectionName] || [];
                   const isSectionComplete = modulesInSection.length > 0 && modulesInSection.every(m => currentUserProgress[m.id]?.isCompleted);
                   
-                  // Parse Section Name "A. Title"
                   const parts = sectionName.split('. ');
                   const letter = parts.length > 1 ? parts[0] : ''; 
                   const title = parts.length > 1 ? parts.slice(1).join('. ') : sectionName;
@@ -534,7 +527,6 @@ function App() {
               </div>
             </div>
 
-            {/* Modules Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 animate-fadeIn">
                {sections[activeTab]?.map(module => (
                  <div key={module.id} className="md:col-span-1 lg:col-span-2">
@@ -563,11 +555,9 @@ function App() {
         />
       )}
 
-      {/* Certificate Modal */}
       {showCertificate && currentUser && (
         <div className="fixed inset-0 z-[300] bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
            <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full flex flex-col relative overflow-hidden">
-              {/* Controls */}
               <div className="bg-gray-800 text-white p-4 flex justify-between items-center no-print">
                  <h3 className="font-bold flex items-center gap-2"><Award size={20}/> Certificate of Completion</h3>
                  <div className="flex gap-2">
@@ -583,9 +573,7 @@ function App() {
                  </div>
               </div>
 
-              {/* Certificate Content - Printable Area */}
               <div className="p-10 md:p-16 text-center border-[20px] border-double border-gray-100 m-2 flex flex-col items-center justify-center min-h-[600px] relative bg-white certificate-container">
-                  {/* Decorative corner borders could act as CSS enhancements */}
                   <div className="absolute top-4 left-4 w-16 h-16 border-t-4 border-l-4 border-osmak-green"></div>
                   <div className="absolute top-4 right-4 w-16 h-16 border-t-4 border-r-4 border-osmak-green"></div>
                   <div className="absolute bottom-4 left-4 w-16 h-16 border-b-4 border-l-4 border-osmak-green"></div>
@@ -628,7 +616,6 @@ function App() {
         </div>
       )}
       
-      {/* Print Styles */}
       <style>{`
         @media print {
           body * {
