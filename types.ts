@@ -8,22 +8,29 @@ export interface Question {
 
 export interface Module {
   id: string;
-  section: string; // Grouping category (e.g. "A. Quality Assurance")
+  section: string;
   title: string;
   description: string;
   thumbnailUrl: string;
-  duration?: string; // Optional duration
-  topics: string[]; // For Gemini context
+  duration?: string;
+  topics: string[];
   videoUrl?: string;
   questions?: Question[];
-  allowedRoles?: UserRole[]; // New property for RBAC
+  allowedRoles?: UserRole[];
+}
+
+export interface Attempt {
+  date: string;
+  score: number;
+  answers: Record<string, number>;
 }
 
 export interface ModuleProgress {
   isUnlocked: boolean;
   isCompleted: boolean;
-  highScore: number; // Percentage 0-100
-  lastAttemptAnswers?: Record<string, number>; // questionId -> selectedOptionIndex
+  highScore: number;
+  lastAttemptAnswers?: Record<string, number>;
+  attempts?: Attempt[]; // Store history of completions
 }
 
 export type UserRole = 
@@ -36,12 +43,6 @@ export type UserRole =
   | 'Non-clinical' 
   | 'Medical Intern';
 
-export interface UserState {
-  progress: Record<string, ModuleProgress>;
-  activeModuleId: string | null;
-  userRole?: UserRole;
-}
-
 export enum AppView {
   DASHBOARD = 'DASHBOARD',
   PLAYER = 'PLAYER',
@@ -49,7 +50,10 @@ export enum AppView {
   ADMIN_DASHBOARD = 'ADMIN_DASHBOARD',
   COURSE_MANAGER = 'COURSE_MANAGER',
   ROLE_ACCESS = 'ROLE_ACCESS',
-  SESSIONS = 'SESSIONS'
+  SESSIONS = 'SESSIONS',
+  SESSION_CHOICE = 'SESSION_CHOICE',
+  EVALUATION = 'EVALUATION',
+  COMPLETION_SUCCESS = 'COMPLETION_SUCCESS'
 }
 
 export interface RegistrationData {
@@ -57,7 +61,7 @@ export interface RegistrationData {
   lastName: string;
   middleInitial: string;
   birthday: string;
-  hospitalNumber: string; // Acts as the unique ID / Password
+  hospitalNumber: string;
   plantillaPosition: string;
   role: UserRole | '';
   division: string;
@@ -66,17 +70,34 @@ export interface RegistrationData {
 
 export interface UserProfile extends RegistrationData {
   progress: Record<string, ModuleProgress>;
-  registrationDate?: string; // Added to support filtering by join date
+  registrationDate?: string;
 }
 
-export interface OrganizationalStructure {
-  [division: string]: string[]; // Array of sections/departments. Empty if none.
+export interface SessionEvaluation {
+  userId: string;
+  userName: string;
+  date: string;
+  scores: {
+    q1: number;
+    q2: number;
+    q3: number;
+    q4: number;
+    q5: number;
+  };
+  feedback: string;
 }
 
 export interface TrainingSession {
   id: string;
   name: string;
-  date: string;
+  startDateTime: string; 
+  endDateTime: string;   
   moduleIds: string[];
   employeeHospitalNumbers: string[];
+  status: 'open' | 'closed';
+  evaluations?: Record<string, SessionEvaluation>; // userId -> evaluation
+}
+
+export interface OrganizationalStructure {
+  [division: string]: string[];
 }
