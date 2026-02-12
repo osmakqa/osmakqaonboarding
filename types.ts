@@ -66,6 +66,7 @@ export interface RegistrationData {
 
 export interface UserProfile extends RegistrationData {
   progress: Record<string, ModuleProgress>;
+  registrationDate?: string; // Added to support filtering by join date
 }
 
 export interface OrganizationalStructure {

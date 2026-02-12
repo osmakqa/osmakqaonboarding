@@ -23,7 +23,8 @@ const FALLBACK_USERS: UserProfile[] = [
     role: 'QA Admin',
     division: 'Quality Assurance Division',
     departmentOrSection: 'Process and Performance Improvement Section',
-    progress: {}
+    progress: {},
+    registrationDate: '2024-01-01'
   }
 ];
 
@@ -60,12 +61,16 @@ export const dataService = {
   async registerUser(data: RegistrationData): Promise<UserProfile | null> {
     try {
       const userRef = doc(db, 'users', data.hospitalNumber);
-      const newUser: UserProfile = { ...data, progress: {} };
+      const newUser: UserProfile = { 
+        ...data, 
+        progress: {},
+        registrationDate: new Date().toISOString().split('T')[0] // Automatically set registration date
+      };
       await setDoc(userRef, newUser);
       return newUser;
     } catch (e: any) {
       handleFirebaseError(e, 'registerUser');
-      return { ...data, progress: {} } as UserProfile;
+      return { ...data, progress: {}, registrationDate: new Date().toISOString().split('T')[0] } as UserProfile;
     }
   },
 

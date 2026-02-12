@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { TrainingSession, Module, UserProfile } from '../types';
 import { Calendar, Plus, Search, Edit2, Trash2, X, Check, Users, BookOpen, BarChart3, ChevronRight, CheckCircle, Info, Loader2, Save } from 'lucide-react';
@@ -114,6 +115,20 @@ const SessionManager: React.FC<SessionManagerProps> = ({ sessions, modules, user
         totalWork: totalModulesExpected
     };
   };
+
+  // Helper for filtering users in the session creation modal
+  const filteredUsersForSelection = useMemo(() => {
+    const s = userSearch.toLowerCase();
+    return users.filter(u => {
+        return (
+            u.lastName.toLowerCase().includes(s) || 
+            u.firstName.toLowerCase().includes(s) || 
+            u.hospitalNumber.toLowerCase().includes(s) ||
+            u.role.toLowerCase().includes(s) ||
+            (u.registrationDate && u.registrationDate.includes(s))
+        );
+    });
+  }, [users, userSearch]);
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -413,14 +428,14 @@ const SessionManager: React.FC<SessionManagerProps> = ({ sessions, modules, user
                                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                                 <input 
                                     type="text" 
-                                    placeholder="Search by name or ID..."
+                                    placeholder="Search by name, ID, role, or reg date..."
                                     value={userSearch}
                                     onChange={(e) => setUserSearch(e.target.value)}
                                     className="w-full pl-9 pr-4 py-2 border border-gray-100 rounded-lg text-xs bg-gray-50 text-black focus:ring-2 focus:ring-osmak-green outline-none"
                                 />
                             </div>
                             <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1 pr-2">
-                                {users.filter(u => u.lastName.toLowerCase().includes(userSearch.toLowerCase()) || u.firstName.toLowerCase().includes(userSearch.toLowerCase()) || u.hospitalNumber.includes(userSearch)).map(u => {
+                                {filteredUsersForSelection.map(u => {
                                     const isSelected = formData.employeeHospitalNumbers?.includes(u.hospitalNumber);
                                     return (
                                         <button 
@@ -434,7 +449,10 @@ const SessionManager: React.FC<SessionManagerProps> = ({ sessions, modules, user
                                                 </div>
                                                 <div className="text-left">
                                                     <p className={`text-xs font-bold ${isSelected ? 'text-osmak-green' : 'text-gray-700'}`}>{u.lastName}, {u.firstName}</p>
-                                                    <p className="text-[9px] text-gray-400 font-mono">{u.hospitalNumber} • {u.role}</p>
+                                                    <p className="text-[9px] text-gray-400 font-mono">
+                                                        {u.hospitalNumber} • {u.role}
+                                                        {u.registrationDate && ` • Joined: ${u.registrationDate}`}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </button>
