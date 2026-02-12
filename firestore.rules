@@ -1,0 +1,37 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // USERS COLLECTION
+    // Required for the custom login/registration logic
+    match /users/{hospitalNumber} {
+      // Allow read so the app can verify credentials during login
+      // Allow create/update for registration and progress tracking
+      allow read, write: if true;
+    }
+    
+    // MODULES COLLECTION
+    // Training content should be accessible to all registered users
+    match /modules/{moduleId} {
+      // Everyone can view modules to participate in training
+      allow read: if true;
+      
+      // Ideally restricted to Admin. Without Firebase Auth, 
+      // we allow it here but it's protected by the Admin Dashboard UI logic.
+      allow write: if true;
+    }
+    
+    // SESSIONS COLLECTION
+    // Training sessions are visible to the group for progress monitoring
+    match /sessions/{sessionId} {
+      allow read: if true;
+      allow write: if true;
+    }
+    
+    // FALLBACK
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

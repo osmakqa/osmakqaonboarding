@@ -7,12 +7,13 @@ import LoginModal from './components/LoginModal';
 import AdminDashboard from './components/AdminDashboard';
 import CourseManager from './components/CourseManager';
 import RoleAccessSettings from './components/RoleAccessSettings';
+import SessionManager from './components/SessionManager';
 import { MODULES, PASSING_SCORE } from './constants';
-import { Module, UserState, ModuleProgress, AppView, UserRole, UserProfile, RegistrationData } from './types';
+import { Module, UserState, ModuleProgress, AppView, UserRole, UserProfile, RegistrationData, TrainingSession } from './types';
 import { dataService } from './services/dataService';
 import { 
   Trophy, Activity, Star, Users, LayoutDashboard, Eye, Award, X, Download, Loader2,
-  ShieldCheck, HeartPulse, FileText, Microscope, Syringe, BookOpen, Settings
+  ShieldCheck, HeartPulse, FileText, Microscope, Syringe, BookOpen, Settings, Calendar
 } from 'lucide-react';
 
 const INITIAL_PROGRESS_TEMPLATE: Record<string, ModuleProgress> = {};
@@ -32,6 +33,7 @@ function App() {
   
   // Modules managed locally with hybrid sync from Firebase
   const [modules, setModules] = useState<Module[]>(MODULES);
+  const [sessions, setSessions] = useState<TrainingSession[]>([]);
   const [isLoadingModules, setIsLoadingModules] = useState(true);
   
   const [adminPreviewRole, setAdminPreviewRole] = useState<string>('All');
@@ -47,12 +49,14 @@ function App() {
       setIsLoadingUsers(true);
       setIsLoadingModules(true);
       try {
-        const [fetchedUsers, fetchedModules] = await Promise.all([
+        const [fetchedUsers, fetchedModules, fetchedSessions] = await Promise.all([
           dataService.fetchUsers(),
-          dataService.fetchModules()
+          dataService.fetchModules(),
+          dataService.fetchSessions()
         ]);
         
         setUsers(fetchedUsers);
+        setSessions(fetchedSessions);
 
         // Hybrid Merge: Database versions override hardcoded ones
         const mergedModules = [...MODULES];
@@ -231,6 +235,24 @@ function App() {
     }
   };
 
+  const handleAddSession = async (session: TrainingSession) => {
+    if (await dataService.saveSession(session)) {
+      setSessions(prev => [...prev, session]);
+    }
+  };
+
+  const handleUpdateSession = async (session: TrainingSession) => {
+    if (await dataService.saveSession(session)) {
+      setSessions(prev => prev.map(s => s.id === session.id ? session : s));
+    }
+  };
+
+  const handleDeleteSession = async (sessionId: string) => {
+    if (await dataService.deleteSession(sessionId)) {
+      setSessions(prev => prev.filter(s => s.id !== sessionId));
+    }
+  };
+
   // Fixed the mapping here: using m.id instead of non-existent id
   const visibleModuleIds = filteredModules.map(m => m.id); 
   const completedCount = visibleModuleIds.filter(id => currentUserProgress[id]?.isCompleted).length;
@@ -264,6 +286,7 @@ function App() {
           <div className="bg-gray-800 text-white px-6 py-2 flex flex-col md:flex-row gap-4 text-sm justify-between items-center shadow-inner overflow-x-auto">
               <div className="flex gap-4 shrink-0">
                   <button onClick={() => setView(AppView.ADMIN_DASHBOARD)} className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.ADMIN_DASHBOARD ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}><Users size={16} /> Employees</button>
+                  <button onClick={() => setView(AppView.SESSIONS)} className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.SESSIONS ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}><Calendar size={16} /> Sessions</button>
                   <button onClick={() => setView(AppView.COURSE_MANAGER)} className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.COURSE_MANAGER ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}><BookOpen size={16} /> Course Manager</button>
                   <button onClick={() => setView(AppView.ROLE_ACCESS)} className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.ROLE_ACCESS ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}><ShieldCheck size={16} /> Role Access</button>
                   <button onClick={() => setView(AppView.DASHBOARD)} className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${view === AppView.DASHBOARD ? 'bg-white/20 font-bold' : 'hover:bg-white/10 opacity-70'}`}><LayoutDashboard size={16} /> Course Preview</button>
@@ -288,7 +311,20 @@ function App() {
 
       {view === AppView.ADMIN_DASHBOARD && currentUser?.role === 'QA Admin' && (
         <main className="flex-1 max-w-7xl mx-auto w-full p-6 animate-fadeIn">
-            <AdminDashboard users={users} onRegisterUser={handleRegister} onUpdateUser={handleUpdateUser} onDeleteUser={handleDeleteUser} isLoading={isProcessing} />
+            <AdminDashboard users={users} modules={modules} onRegisterUser={handleRegister} onUpdateUser={handleUpdateUser} onDeleteUser={handleDeleteUser} isLoading={isProcessing} />
+        </main>
+      )}
+
+      {view === AppView.SESSIONS && currentUser?.role === 'QA Admin' && (
+        <main className="flex-1 max-w-7xl mx-auto w-full p-6 animate-fadeIn">
+            <SessionManager 
+                sessions={sessions} 
+                modules={modules} 
+                users={users} 
+                onAddSession={handleAddSession} 
+                onUpdateSession={handleUpdateSession} 
+                onDeleteSession={handleDeleteSession} 
+            />
         </main>
       )}
 

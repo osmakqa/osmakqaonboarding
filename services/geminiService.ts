@@ -7,16 +7,10 @@ import { FALLBACK_QUESTIONS } from '../constants';
  * Adheres strictly to @google/genai guidelines.
  */
 export const generateQuizForModule = async (module: Module): Promise<Question[]> => {
-  // Directly assume process.env.API_KEY is available as per requirements
-  const apiKey = process.env.API_KEY;
-
-  if (!apiKey) {
-    console.warn("No API Key found in environment. Using fallback questions.");
-    return FALLBACK_QUESTIONS;
-  }
-
   try {
-    const ai = new GoogleGenAI({ apiKey });
+    // Obtain the API key exclusively from environment variables and initialize directly.
+    // GUIDELINE: Always use `const ai = new GoogleGenAI({apiKey: process.env.API_KEY});`.
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const prompt = `
       Create a multiple-choice quiz with 5 difficult questions for a hospital quality assurance training module.
@@ -60,7 +54,7 @@ export const generateQuizForModule = async (module: Module): Promise<Question[]>
       }
     });
 
-    // Directly access .text property as per guidelines
+    // Directly access .text property as per guidelines (not a method call)
     const responseText = response.text;
     if (responseText) {
       const parsed = JSON.parse(responseText.trim());

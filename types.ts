@@ -48,7 +48,8 @@ export enum AppView {
   QUIZ = 'QUIZ',
   ADMIN_DASHBOARD = 'ADMIN_DASHBOARD',
   COURSE_MANAGER = 'COURSE_MANAGER',
-  ROLE_ACCESS = 'ROLE_ACCESS'
+  ROLE_ACCESS = 'ROLE_ACCESS',
+  SESSIONS = 'SESSIONS'
 }
 
 export interface RegistrationData {
@@ -69,4 +70,12 @@ export interface UserProfile extends RegistrationData {
 
 export interface OrganizationalStructure {
   [division: string]: string[]; // Array of sections/departments. Empty if none.
+}
+
+export interface TrainingSession {
+  id: string;
+  name: string;
+  date: string;
+  moduleIds: string[];
+  employeeHospitalNumbers: string[];
 }

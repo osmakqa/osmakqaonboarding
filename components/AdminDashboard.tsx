@@ -1,11 +1,12 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { UserProfile, RegistrationData, UserRole, OrganizationalStructure, Module } from '../types';
-import { MODULES, ORGANIZATIONAL_STRUCTURE, PASSING_SCORE } from '../constants';
+import { ORGANIZATIONAL_STRUCTURE, PASSING_SCORE } from '../constants';
 import { Search, UserPlus, CheckCircle, XCircle, FileText, User, Filter, RefreshCw, BarChart3, Users, Loader2, Pencil, Save, Trash2, ShieldCheck, HelpCircle } from 'lucide-react';
 
 interface AdminDashboardProps {
   users: UserProfile[];
+  modules: Module[];
   onRegisterUser: (data: RegistrationData) => void;
   onUpdateUser: (hospitalNumber: string, data: RegistrationData) => void;
   onDeleteUser: (hospitalNumber: string) => void;
@@ -23,7 +24,7 @@ const REGISTRATION_ROLES: UserRole[] = [
     'Non-clinical',
   ];
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, onUpdateUser, onDeleteUser, isLoading = false }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, modules, onRegisterUser, onUpdateUser, onDeleteUser, isLoading = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDivision, setFilterDivision] = useState('');
   const [filterDept, setFilterDept] = useState('');
@@ -114,9 +115,28 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
 
   const availableDepts = filterDivision ? ORGANIZATIONAL_STRUCTURE[filterDivision] || [] : [];
 
+  // Logic to determine which modules are accessible to a specific user role
+  const getAccessibleModulesForUser = (user: UserProfile) => {
+    const effectiveRole = user.role;
+    
+    // RBAC logic mirrored from App.tsx
+    if (effectiveRole === 'QA Admin' || effectiveRole === 'Head / Assistant Head') {
+      return modules;
+    }
+
+    return modules.filter(m => {
+      if (m.allowedRoles && m.allowedRoles.length > 0) {
+        return m.allowedRoles.includes(effectiveRole as UserRole);
+      }
+      const clinicalRoles: UserRole[] = ['Doctor', 'Nurse', 'Nurse (High-risk Area)', 'Other Clinical (Med Tech, Rad Tech, etc)'];
+      return clinicalRoles.includes(effectiveRole as UserRole);
+    });
+  };
+
   const getUserProgress = (user: UserProfile) => {
-    const total = MODULES.length;
-    const completed = Object.values(user.progress || {}).filter(p => p.isCompleted).length;
+    const accessibleModules = getAccessibleModulesForUser(user);
+    const total = accessibleModules.length;
+    const completed = accessibleModules.filter(m => user.progress?.[m.id]?.isCompleted).length;
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
     return { completed, total, percentage };
   };
@@ -125,18 +145,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
     if (filteredUsers.length === 0) return { average: 0 };
     const totalPercentage = filteredUsers.reduce((sum, user) => sum + getUserProgress(user).percentage, 0);
     return { average: Math.round(totalPercentage / filteredUsers.length) };
-  }, [filteredUsers]);
+  }, [filteredUsers, modules]);
 
-  const modulesBySection = useMemo(() => {
+  // Grouping logic for the detailed view
+  const getModulesBySectionForUser = (user: UserProfile) => {
+    const accessible = getAccessibleModulesForUser(user);
     const groups: Record<string, Module[]> = {};
-    MODULES.forEach(m => {
+    accessible.forEach(m => {
       if (!groups[m.section]) groups[m.section] = [];
       groups[m.section].push(m);
     });
     return groups;
-  }, []);
-
-  const sectionNames = Object.keys(modulesBySection).sort();
+  };
 
   return (
     <div className="space-y-6">
@@ -227,7 +247,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                                      </div>
                                  </td>
                                  <td className="px-6 py-4 text-center">
-                                     {stats.percentage >= 100 ? <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold"><CheckCircle size={12} /> Completed</span> : <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">In Progress</span>}
+                                     {stats.percentage >= 100 && stats.total > 0 ? <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold"><CheckCircle size={12} /> Completed</span> : <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">In Progress</span>}
                                  </td>
                                  <td className="px-6 py-4 text-center whitespace-nowrap">
                                      <button onClick={(e) => { e.stopPropagation(); setEditingUser(user); }} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-colors" title="Edit Employee"><Pencil size={16} /></button>
@@ -261,11 +281,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, onRegisterUser, 
                   </div>
                   <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-gray-50">
                     <div className="space-y-6">
-                        {sectionNames.map(section => (
+                        {Object.entries(getModulesBySectionForUser(selectedUser)).sort((a,b) => a[0].localeCompare(b[0])).map(([section, userModules]) => (
                             <div key={section} className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                                 <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 font-bold text-black text-sm">{section}</div>
                                 <div className="divide-y divide-gray-100">
-                                    {modulesBySection[section].map(module => {
+                                    {userModules.map(module => {
                                         const progress = selectedUser.progress?.[module.id];
                                         const isCompleted = progress?.isCompleted;
                                         const score = progress?.highScore || 0;

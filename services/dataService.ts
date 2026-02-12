@@ -9,7 +9,7 @@ import {
   deleteDoc, 
   getDoc 
 } from 'firebase/firestore';
-import { UserProfile, RegistrationData, ModuleProgress, Module } from '../types';
+import { UserProfile, RegistrationData, ModuleProgress, Module, TrainingSession } from '../types';
 
 // Fallback data for offline mode or network errors
 const FALLBACK_USERS: UserProfile[] = [
@@ -27,6 +27,15 @@ const FALLBACK_USERS: UserProfile[] = [
   }
 ];
 
+const handleFirebaseError = (error: any, context: string) => {
+  if (error?.code === 'permission-denied') {
+    console.error(`Security Rule Violation in ${context}: You do not have permission to perform this action.`);
+    alert("Access Denied: You do not have the required administrative permissions for this action.");
+  } else {
+    console.error(`Firebase Error in ${context}:`, error?.message || error);
+  }
+};
+
 export const dataService = {
   /**
    * Fetch all users from Firebase
@@ -40,7 +49,7 @@ export const dataService = {
       });
       return users.length > 0 ? users : FALLBACK_USERS;
     } catch (e: any) {
-      console.error(`Firebase User Fetch Error: ${e?.message || 'Unknown error'}`);
+      handleFirebaseError(e, 'fetchUsers');
       return FALLBACK_USERS;
     }
   },
@@ -55,7 +64,7 @@ export const dataService = {
       await setDoc(userRef, newUser);
       return newUser;
     } catch (e: any) {
-      console.error(`Registration failed: ${e?.message || 'Network/Auth error'}`);
+      handleFirebaseError(e, 'registerUser');
       return { ...data, progress: {} } as UserProfile;
     }
   },
@@ -77,7 +86,7 @@ export const dataService = {
       const updatedDoc = await getDoc(userRef);
       return updatedDoc.data() as UserProfile;
     } catch (e: any) {
-      console.error(`Update failed: ${e?.message || 'Network/Auth error'}`);
+      handleFirebaseError(e, 'updateUser');
       return null;
     }
   },
@@ -91,7 +100,7 @@ export const dataService = {
       await deleteDoc(userRef);
       return true;
     } catch (e: any) {
-      console.error(`Delete failed: ${e?.message || 'Network/Auth error'}`);
+      handleFirebaseError(e, 'deleteUser');
       return false;
     }
   },
@@ -111,14 +120,13 @@ export const dataService = {
       });
       return true;
     } catch (e: any) {
-      console.error(`Progress update failed: ${e?.message || 'Network/Auth error'}`);
+      handleFirebaseError(e, 'updateUserProgress');
       return false;
     }
   },
 
   /**
-   * MODULE PERSISTENCE (Hybrid)
-   * This allows saving hardcoded modules into the database.
+   * MODULE PERSISTENCE
    */
   async fetchModules(): Promise<Module[]> {
     try {
@@ -129,7 +137,7 @@ export const dataService = {
       });
       return modules;
     } catch (e: any) {
-      console.error(`Firebase Module Fetch Error: ${e?.message}`);
+      handleFirebaseError(e, 'fetchModules');
       return [];
     }
   },
@@ -140,7 +148,7 @@ export const dataService = {
       await setDoc(moduleRef, module);
       return true;
     } catch (e: any) {
-      console.error(`Save module failed: ${e?.message}`);
+      handleFirebaseError(e, 'saveModule');
       return false;
     }
   },
@@ -149,7 +157,46 @@ export const dataService = {
     try {
       await deleteDoc(doc(db, 'modules', moduleId));
       return true;
-    } catch (e) {
+    } catch (e: any) {
+      handleFirebaseError(e, 'deleteModule');
+      return false;
+    }
+  },
+
+  /**
+   * SESSION PERSISTENCE
+   */
+  async fetchSessions(): Promise<TrainingSession[]> {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'sessions'));
+      const sessions: TrainingSession[] = [];
+      querySnapshot.forEach((doc) => {
+        sessions.push(doc.data() as TrainingSession);
+      });
+      return sessions;
+    } catch (e: any) {
+      handleFirebaseError(e, 'fetchSessions');
+      return [];
+    }
+  },
+
+  async saveSession(session: TrainingSession): Promise<boolean> {
+    try {
+      const sessionRef = doc(db, 'sessions', session.id);
+      await setDoc(sessionRef, session);
+      return true;
+    } catch (e: any) {
+      handleFirebaseError(e, 'saveSession');
+      return false;
+    }
+  },
+
+  async deleteSession(sessionId: string): Promise<boolean> {
+    try {
+      await deleteDoc(doc(db, 'sessions', sessionId));
+      return true;
+    } catch (e: any) {
+      handleFirebaseError(e, 'deleteSession');
       return false;
     }
   }
