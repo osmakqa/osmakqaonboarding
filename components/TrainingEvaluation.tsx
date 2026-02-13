@@ -36,7 +36,8 @@ const TrainingEvaluation: React.FC<TrainingEvaluationProps> = ({ session, user, 
     setScores(prev => ({ ...prev, [qId]: val }));
   };
 
-  const isComplete = Object.values(scores).every(v => v > 0) && feedback.trim().length > 0;
+  // Explicitly cast v to number to resolve TypeScript operator '>' application error
+  const isComplete = Object.values(scores).every(v => (v as number) > 0) && feedback.trim().length > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

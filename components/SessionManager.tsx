@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { TrainingSession, Module, UserProfile, UserRole } from '../types';
+import { TrainingSession, Module, UserProfile, UserRole, SessionEvaluation } from '../types';
 // Added ClipboardCheck to the imports from lucide-react
 import { Calendar, Plus, Search, Edit2, Trash2, X, Check, Users, BookOpen, BarChart3, ChevronRight, CheckCircle, Info, Loader2, Save, Clock, Lock, Unlock, ArrowRight, XCircle, Star, MessageSquare, ClipboardCheck } from 'lucide-react';
 
@@ -153,11 +153,13 @@ const SessionManager: React.FC<SessionManagerProps> = ({ sessions, modules, user
 
       const sums = { q1: 0, q2: 0, q3: 0, q4: 0, q5: 0 };
       evals.forEach(ev => {
-          sums.q1 += ev.scores.q1;
-          sums.q2 += ev.scores.q2;
-          sums.q3 += ev.scores.q3;
-          sums.q4 += ev.scores.q4;
-          sums.q5 += ev.scores.q5;
+          // Explicitly cast to SessionEvaluation to fix TS properties access error
+          const e = ev as SessionEvaluation;
+          sums.q1 += e.scores.q1;
+          sums.q2 += e.scores.q2;
+          sums.q3 += e.scores.q3;
+          sums.q4 += e.scores.q4;
+          sums.q5 += e.scores.q5;
       });
 
       return {
@@ -360,6 +362,7 @@ const SessionManager: React.FC<SessionManagerProps> = ({ sessions, modules, user
                                             <tr>
                                                 <th className="px-6 py-5 sticky left-0 bg-gray-50 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] min-w-[200px]">Member</th>
                                                 <th className="px-6 py-5 text-center bg-blue-50 text-blue-700 min-w-[100px] sticky left-[200px] z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Progress</th>
+                                                <th className="px-6 py-5 text-center bg-green-50 text-osmak-green min-w-[100px] sticky left-[300px] z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Feedback</th>
                                                 {modules.filter(m => selectedSession.moduleIds.includes(m.id)).map(m => (
                                                     <th key={m.id} className="px-4 py-5 text-center min-w-[180px] font-black leading-tight border-l border-gray-100">{m.title}</th>
                                                 ))}
@@ -370,6 +373,7 @@ const SessionManager: React.FC<SessionManagerProps> = ({ sessions, modules, user
                                                 const sModules = modules.filter(m => selectedSession.moduleIds.includes(m.id));
                                                 const completed = sModules.filter(m => user.progress?.[m.id]?.isCompleted).length;
                                                 const percent = sModules.length > 0 ? Math.round((completed / sModules.length) * 100) : 0;
+                                                const hasFeedback = selectedSession.evaluations?.[user.hospitalNumber];
                                                 
                                                 return (
                                                     <tr key={user.hospitalNumber} className="hover:bg-gray-50 transition-colors group">
@@ -379,6 +383,16 @@ const SessionManager: React.FC<SessionManagerProps> = ({ sessions, modules, user
                                                         </td>
                                                         <td className="px-6 py-5 text-center bg-blue-50/30 sticky left-[200px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50">
                                                             <span className={`font-black text-lg ${percent === 100 ? 'text-osmak-green' : 'text-blue-700'}`}>{percent}%</span>
+                                                        </td>
+                                                        <td className="px-6 py-5 text-center bg-green-50/30 sticky left-[300px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-green-50">
+                                                            {hasFeedback ? (
+                                                                <div className="flex flex-col items-center">
+                                                                    <ClipboardCheck size={20} className="text-osmak-green" />
+                                                                    <span className="text-[8px] font-black uppercase text-osmak-green-dark mt-0.5">Done</span>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="w-2 h-2 rounded-full bg-gray-200 mx-auto"></div>
+                                                            )}
                                                         </td>
                                                         {sModules.map(m => {
                                                             const isDone = user.progress?.[m.id]?.isCompleted;
@@ -471,7 +485,8 @@ const SessionManager: React.FC<SessionManagerProps> = ({ sessions, modules, user
                                                 <MessageSquare size={14}/> qualitative Feedback entries
                                             </h4>
                                             <div className="grid grid-cols-1 gap-4">
-                                                {Object.values(selectedSession.evaluations || {}).map((ev, idx) => (
+                                                {/* Explicitly cast evaluations values to SessionEvaluation[] to resolve TS 'unknown' property errors */}
+                                                {(Object.values(selectedSession.evaluations || {}) as SessionEvaluation[]).map((ev, idx) => (
                                                     <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-3 hover:border-blue-100 transition-all">
                                                         <div className="flex justify-between items-start">
                                                             <div className="flex items-center gap-3">
